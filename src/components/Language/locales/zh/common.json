@@ -1,0 +1,59 @@
+{
+  "add": "添加",
+  "remove": "删除",
+  "key": "键",
+  "value": "值",
+  "action": "操作",
+
+  "nav": {
+    "dashboard": "仪表盘",
+    "tenant": "租户",
+    "tenants": "租户列表",
+    "create": "创建"
+  },
+  "dashboard": {
+    "title": "仪表盘"
+  },
+  "tenant": {
+    "tenantInfo": "租户信息",
+    "storeInfo": "商店信息",
+    "userInfo": "用户信息",
+    "storeSetting": "商店设置",
+    "tenantSetting": "租户设置",
+    "userPermission": "用户权限",
+    "submit": "提交",
+    "form": {
+      "addSetting": "添加设置",
+      "tenantName": "租户名称",
+      "tenantContactEmail": "租户联系邮箱",
+      "tenantContactPhone": "租户联系电话",
+      "tenantIsActive": "租户是否激活",
+      "tenantDbConnectionString": "租户数据库连接",
+
+      "storeName": "商店名称",
+      "storeAddress": "商店地址",
+      "storeCity": "商店所在城市",
+      "storeState": "商店所在省份",
+      "storeZipCode": "商店邮政编码",
+      "storePhone": "商店电话",
+      "storeEmail": "商店邮箱",
+      "storeTimezone": "商店时区",
+
+      "userFirstName": "名字",
+      "userLastName": "姓氏",
+      "userEmail": "用户邮箱",
+      "userPasswordHash": "密码",
+      "userPhone": "用户电话",
+      "userRole": "用户角色",
+      "userIsActive": "用户是否激活"
+    },
+    "table": {
+      "name": "名称",
+      "contactEmail": "联系邮箱",
+      "contactPhone": "联系电话",
+      "isActive": "状态",
+      "dbConnectionString": "数据库名称",
+      "createdAt": "创建日期"
+    }
+  }
+}

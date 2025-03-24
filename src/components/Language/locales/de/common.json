@@ -1,0 +1,59 @@
+{
+  "add": "Hinzufügen",
+  "remove": "Entfernen",
+  "key": "Schlüssel",
+  "value": "Wert",
+  "action": "AKTION",
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "tenant": "Mieter",
+    "tenants": "Mieter",
+    "create": "Erstellen"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "tenant": {
+    "tenantInfo": "Mieterinformationen",
+    "storeInfo": "Geschäftsinformationen",
+    "userInfo": "Benutzerinformationen",
+    "storeSetting": "Geschäftseinstellungen",
+    "tenantSetting": "Mietereinstellungen",
+    "userPermission": "Benutzerberechtigungen",
+    "submit": "Absenden",
+    "form": {
+      "addSetting": "Einstellung hinzufügen",
+      "tenantName": "Mietername",
+      "tenantContactEmail": "Mieter E-Mail",
+      "tenantContactPhone": "Mieter Telefon",
+      "tenantIsActive": "Mieter aktiv",
+      "tenantDbConnectionString": "Mieter DB Verbindung",
+
+      "storeName": "Geschäftsname",
+      "storeAddress": "Geschäftsadresse",
+      "storeCity": "Geschäftsstadt",
+      "storeState": "Geschäftsregion",
+      "storeZipCode": "Postleitzahl",
+      "storePhone": "Geschäftstelefon",
+      "storeEmail": "Geschäfts-E-Mail",
+      "storeTimezone": "Zeitzone",
+
+      "userFirstName": "Vorname",
+      "userLastName": "Nachname",
+      "userEmail": "Benutzer-E-Mail",
+      "userPasswordHash": "Passwort",
+      "userPhone": "Benutzertelefon",
+      "userRole": "Benutzerrolle",
+      "userIsActive": "Benutzer aktiv"
+    },
+    "table": {
+      "name": "NAME",
+      "contactEmail": "KONTAKT E-MAIL",
+      "contactPhone": "KONTAKT TELEFON",
+      "isActive": "STATUS",
+      "dbConnectionString": "DATENBANKNAME",
+      "createdAt": "ERSTELLUNGSDATUM"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "add": "Add",
+  "remove": "Remove",
+  "key": "Key",
+  "value": "Value",
+  "action": "ACTION",
+  "email": "Email",
+  "password": "Password",
+  "nav": {
+    "dashboard": "Dashboard",
+    "tenant": "Tenant",
+    "tenants": "Tenants",
+    "create": "Create"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "tenant": {
+    "tenantInfo": "Tenant Information",
+    "storeInfo": "Store Information",
+    "userInfo": "User Information",
+    "storeSetting": "Store Settings",
+    "tenantSetting": "Tenant Setting",
+    "userPermission": "User Permissionsn",
+    "submit": "Submit",
+    "form": {
+      "addSetting": "Add Setting",
+      "tenantName": "Tenant Name",
+      "tenantContactEmail": "Tenant Contact Email",
+      "tenantContactPhone": "Tenant Contact Phone",
+      "tenantIsActive": "Tenant Active",
+      "tenantDbConnectionString": "Tenant DB Connection",
+
+      "storeName": "Store Name",
+      "storeAddress": "Store Address",
+      "storeCity": "Store City",
+      "storeState": "Store State",
+      "storeZipCode": "Store Zip Code",
+      "storePhone": "Store Phone",
+      "storeEmail": "Store Email",
+      "storeTimezone": "Store Timezone",
+
+      "userFirstName": "First Name",
+      "userLastName": "Last Name",
+      "userEmail": "User Email",
+      "userPasswordHash": "Password",
+      "userPhone": "User Phone",
+      "userRole": "User Role",
+      "userIsActive": "User Active"
+    },
+    "table": {
+      "name": "NAME",
+      "contactEmail": "CONTACT EMAIL",
+      "contactPhone": "CONTACT PHONE",
+      "isActive": "STATUS",
+      "dbConnectionString": "DB NAME",
+      "createdAt": "CREATED DATE"
+    }
+  }
+}

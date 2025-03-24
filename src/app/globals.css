@@ -1,0 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Rubik:ital,wght@0,300..900;1,300..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  --color-dark: "#15181E";
+  --color-light: "#ECDFCC";
+  --color-gray: "#9ca3af";
+  --color-background: "#dadde4";
+}
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  width: 4px;
+  /* Equivalent to Tailwind's w-1.5 */
+}
+
+/* Light Mode Scrollbar */
+* ::-webkit-scrollbar-track {
+  background-color: #f9fafb;
+}
+
+* ::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Sidebar specific scrollbar in Light Mode */
+/* * ::-webkit-scrollbar-track {
+    background-color: #e5e7eb;
+    
+} */
+
+/* Dark Mode Styles */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background-color: black;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: whitesmoke;
+}
+
+/* Sidebar specific scrollbar in Dark Mode */
+[data-theme="dark"] .sidebar ::-webkit-scrollbar-track {
+  background-color: #1f2937;
+  /* Tailwind's bg-gray-800 */
+}

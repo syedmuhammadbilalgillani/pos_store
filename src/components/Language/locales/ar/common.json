@@ -1,0 +1,59 @@
+{
+  "add": "إضافة",
+  "remove": "إزالة",
+  "key": "المفتاح",
+  "value": "القيمة",
+  "action": "الإجراء",
+
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "tenant": "المستأجر",
+    "tenants": "المستأجرون",
+    "create": "إنشاء"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم"
+  },
+  "tenant": {
+    "tenantInfo": "معلومات المستأجر",
+    "storeInfo": "معلومات المتجر",
+    "userInfo": "معلومات المستخدم",
+    "storeSetting": "إعدادات المتجر",
+    "tenantSetting": "إعدادات المستأجر",
+    "userPermission": "أذونات المستخدم",
+    "submit": "إرسال",
+    "form": {
+      "addSetting": "إضافة إعداد",
+      "tenantName": "اسم المستأجر",
+      "tenantContactEmail": "البريد الإلكتروني للمستأجر",
+      "tenantContactPhone": "هاتف المستأجر",
+      "tenantIsActive": "المستأجر نشط",
+      "tenantDbConnectionString": "اتصال قاعدة بيانات المستأجر",
+
+      "storeName": "اسم المتجر",
+      "storeAddress": "عنوان المتجر",
+      "storeCity": "مدينة المتجر",
+      "storeState": "ولاية المتجر",
+      "storeZipCode": "الرمز البريدي للمتجر",
+      "storePhone": "هاتف المتجر",
+      "storeEmail": "البريد الإلكتروني للمتجر",
+      "storeTimezone": "المنطقة الزمنية للمتجر",
+
+      "userFirstName": "الاسم الأول",
+      "userLastName": "اسم العائلة",
+      "userEmail": "البريد الإلكتروني للمستخدم",
+      "userPasswordHash": "كلمة المرور",
+      "userPhone": "هاتف المستخدم",
+      "userRole": "دور المستخدم",
+      "userIsActive": "المستخدم نشط"
+    },
+    "table": {
+      "name": "الاسم",
+      "contactEmail": "البريد الإلكتروني",
+      "contactPhone": "رقم الهاتف",
+      "isActive": "الحالة",
+      "dbConnectionString": "اسم قاعدة البيانات",
+      "createdAt": "تاريخ الإنشاء"
+    }
+  }
+}
