@@ -1,59 +1,45 @@
 {
   "add": "Ajouter",
+  "back": "Retour",
   "remove": "Supprimer",
   "key": "Clé",
   "value": "Valeur",
-  "action": "ACTION",
-
+  "action": "Action",
+  "email": "E-mail",
+  "password": "Mot de passe",
+  "submit": "Soumettre",
+  "next": "Suivant",
+  "previous": "Précédent",
   "nav": {
     "dashboard": "Tableau de bord",
-    "tenant": "Locataire",
-    "tenants": "Locataires",
+    "user": "Utilisateur",
+    "users": "Utilisateurs",
     "create": "Créer"
   },
   "dashboard": {
     "title": "Tableau de bord"
   },
-  "tenant": {
-    "tenantInfo": "Informations du locataire",
-    "storeInfo": "Informations du magasin",
-    "userInfo": "Informations de l'utilisateur",
-    "storeSetting": "Paramètres du magasin",
-    "tenantSetting": "Paramètres du locataire",
-    "userPermission": "Autorisations utilisateur",
-    "submit": "Soumettre",
+  "user": {
     "form": {
       "addSetting": "Ajouter un paramètre",
-      "tenantName": "Nom du locataire",
-      "tenantContactEmail": "Email du locataire",
-      "tenantContactPhone": "Téléphone du locataire",
-      "tenantIsActive": "Locataire actif",
-      "tenantDbConnectionString": "Connexion BD du locataire",
-
-      "storeName": "Nom du magasin",
-      "storeAddress": "Adresse du magasin",
-      "storeCity": "Ville",
-      "storeState": "Région",
-      "storeZipCode": "Code postal",
-      "storePhone": "Téléphone du magasin",
-      "storeEmail": "Email du magasin",
-      "storeTimezone": "Fuseau horaire",
-
-      "userFirstName": "Prénom",
-      "userLastName": "Nom",
-      "userEmail": "Email",
-      "userPasswordHash": "Mot de passe",
-      "userPhone": "Téléphone",
-      "userRole": "Rôle",
-      "userIsActive": "Utilisateur actif"
+      "firstName": "Nom complet",
+      "lastName": "Nom complet",
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "role": "Rôle",
+      "password": "Mot de passe",
+      "isActive": "Statut actif",
+      "lastLogin": "Dernière connexion",
+      "permissions": "Autorisations"
     },
     "table": {
-      "name": "NOM",
-      "contactEmail": "EMAIL",
-      "contactPhone": "TÉLÉPHONE",
-      "isActive": "STATUT",
-      "dbConnectionString": "BASE DE DONNÉES",
-      "createdAt": "DATE DE CRÉATION"
+      "fullName": "Nom complet",
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "role": "Rôle",
+      "isActive": "Statut actif",
+      "lastLogin": "Dernière connexion",
+      "permissions": "Autorisations"
     }
   }
 }

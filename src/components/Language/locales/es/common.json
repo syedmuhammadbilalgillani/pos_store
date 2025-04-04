@@ -1,59 +1,45 @@
 {
   "add": "Agregar",
+  "back": "Atrás",
   "remove": "Eliminar",
   "key": "Clave",
   "value": "Valor",
-  "action": "ACCIÓN",
-
+  "action": "Acción",
+  "email": "Correo electrónico",
+  "password": "Contraseña",
+  "submit": "Enviar",
+  "next": "Siguiente",
+  "previous": "Anterior",
   "nav": {
-    "dashboard": "Tablero",
-    "tenant": "Inquilino",
-    "tenants": "Inquilinos",
+    "dashboard": "Panel",
+    "user": "Usuario",
+    "users": "Usuarios",
     "create": "Crear"
   },
   "dashboard": {
-    "title": "Tablero"
+    "title": "Panel"
   },
-  "tenant": {
-    "tenantInfo": "Información del inquilino",
-    "storeInfo": "Información de la tienda",
-    "userInfo": "Información del usuario",
-    "storeSetting": "Configuración de la tienda",
-    "tenantSetting": "Configuración del inquilino",
-    "userPermission": "Permisos del usuario",
-    "submit": "Enviar",
+  "user": {
     "form": {
       "addSetting": "Agregar configuración",
-      "tenantName": "Nombre del inquilino",
-      "tenantContactEmail": "Correo del inquilino",
-      "tenantContactPhone": "Teléfono del inquilino",
-      "tenantIsActive": "Inquilino activo",
-      "tenantDbConnectionString": "Conexión de BD del inquilino",
-
-      "storeName": "Nombre de la tienda",
-      "storeAddress": "Dirección de la tienda",
-      "storeCity": "Ciudad de la tienda",
-      "storeState": "Estado de la tienda",
-      "storeZipCode": "Código postal",
-      "storePhone": "Teléfono de la tienda",
-      "storeEmail": "Correo de la tienda",
-      "storeTimezone": "Zona horaria",
-
-      "userFirstName": "Nombre",
-      "userLastName": "Apellido",
-      "userEmail": "Correo electrónico",
-      "userPasswordHash": "Contraseña",
-      "userPhone": "Teléfono",
-      "userRole": "Rol",
-      "userIsActive": "Usuario activo"
+      "firstName": "Nombre completo",
+      "lastName": "Nombre completo",
+      "email": "Correo electrónico",
+      "phone": "Número de teléfono",
+      "role": "Rol",
+      "password": "Contraseña",
+      "isActive": "Estado activo",
+      "lastLogin": "Último acceso",
+      "permissions": "Permisos"
     },
     "table": {
-      "name": "NOMBRE",
-      "contactEmail": "CORREO ELECTRÓNICO",
-      "contactPhone": "TELÉFONO",
-      "isActive": "ESTADO",
-      "dbConnectionString": "BASE DE DATOS",
-      "createdAt": "FECHA DE CREACIÓN"
+      "fullName": "Nombre completo",
+      "email": "Correo electrónico",
+      "phone": "Número de teléfono",
+      "role": "Rol",
+      "isActive": "Estado activo",
+      "lastLogin": "Último acceso",
+      "permissions": "Permisos"
     }
   }
 }

@@ -1,0 +1,354 @@
+"use client";
+import axiosInstance from "@/api";
+import BackButton from "@/components/BackButton";
+import Button from "@/components/Button";
+import Input from "@/components/Input"; // Your reusable Input component
+import TranslatedText from "@/components/Language/TranslatedText";
+import { toast } from "@/components/Toast/toast_manager";
+import { FormField, UserRole } from "@/constant/types";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+
+const TenantStoreUserForm: React.FC = () => {
+  const router = useRouter();
+  const [formData, setFormData] = useState<any>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    passwordHash: "",
+    phone: "",
+    role: UserRole.ADMIN,
+    isActive: true,
+    permissions: {},
+  });
+
+  const [newSetting, setNewSetting] = useState({
+    key: "",
+    value: "",
+    target: "", // 'tenant_settings', 'store_settings', or 'permissions'
+  });
+
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+
+  const formFields: any = [
+    // User Fields
+    {
+      id: "firstName",
+      label: "user.form.firstName",
+      type: "text",
+      required: true,
+    },
+    {
+      id: "lastName",
+      label: "user.form.lastName",
+      type: "text",
+      required: true,
+    },
+    {
+      id: "email",
+      label: "user.form.email",
+      type: "email",
+      required: true,
+    },
+    {
+      id: "passwordHash",
+      label: "user.form.password",
+      type: "password",
+      required: true,
+    },
+    {
+      id: "phone",
+      label: "user.form.phone",
+      type: "tel",
+      required: true,
+    },
+    {
+      id: "role",
+      label: "user.form.role",
+      type: "select",
+      options: Object.values(UserRole),
+      required: true,
+    },
+    {
+      id: "isActive",
+      label: "user.form.isActive",
+      type: "checkbox",
+    },
+  ];
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { id, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+
+    // Special handling for phone numbers
+    if (id === "phone") {
+      // Remove all non-digit characters except the plus sign
+      let formattedPhone = value.replace(/[^\d+]/g, "");
+
+      // Ensure it starts with a plus sign
+      if (formattedPhone && !formattedPhone.startsWith("+")) {
+        formattedPhone = "+" + formattedPhone;
+      }
+
+      setFormData((prev: any) => ({
+        ...prev,
+        [id]: formattedPhone,
+      }));
+    } else {
+      setFormData((prev: any) => ({
+        ...prev,
+        [id]: type === "checkbox" ? checked : value,
+      }));
+    }
+  };
+
+  const handleAddSetting = () => {
+    if (!newSetting.key || !newSetting.value || !newSetting.target) return;
+
+    setFormData((prev: any) => ({
+      ...prev,
+      [newSetting.target]: {
+        ...(prev[newSetting.target as keyof any] as Record<string, any>),
+        [newSetting.key]: newSetting.value,
+      },
+    }));
+
+    setNewSetting({
+      key: "",
+      value: "",
+      target: newSetting.target,
+    });
+  };
+
+  const handleRemoveSetting = (prefix: string, key: string) => {
+    setFormData((prev: any) => {
+      const currentSettings = {
+        ...(prev[prefix as keyof any] as Record<string, any>),
+      };
+      delete currentSettings[key];
+      return { ...prev, [prefix]: currentSettings };
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // Ensure permissions is an object, not a string
+      const payload = {
+        ...formData,
+      };
+
+      const response = await axiosInstance.post("/user/add", payload);
+      console.log("Form submitted successfully:", response.data);
+
+      // Display success message
+      if (response.data.success) {
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          passwordHash: "",
+          phone: "",
+          role: UserRole.ADMIN,
+          isActive: true,
+          permissions: {},
+        });
+        toast.success(response.data.message); // or use a toast notification library
+        router.push("/admin/users");
+      } else {
+        toast.error(response.data.message); // or use a toast notification library
+      }
+    } catch (error: any) {
+      console.error("Error submitting form:", error);
+
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        const messages = error.response.data.message.message;
+        if (Array.isArray(messages)) {
+          messages.forEach((msg) => toast.error(msg));
+        } else {
+          toast.error(
+            typeof error.response.data.message === "string"
+              ? error.response.data.message
+              : "An error occurred"
+          );
+        }
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false); // Reset loading state
+    }
+  };
+
+  const renderSettings = (settings: Record<string, any>, prefix: string) => {
+    return (
+      <div className="space-y-3">
+        {Object.entries(settings).map(([key, value]) => (
+          <div key={`${prefix}_${key}`} className="flex items-center space-x-2">
+            <Input
+              id={`${prefix}_${key}`}
+              label={key}
+              type="text"
+              value={value}
+              onChange={(e) =>
+                setFormData((prev: any) => ({
+                  ...prev,
+                  [prefix]: {
+                    ...(prev[prefix as keyof any] as any),
+                    [key]: e.target.value,
+                  },
+                }))
+              }
+              className="flex-grow"
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveSetting(prefix, key)}
+              className="mt-7 p-2 text-red-500 hover:text-red-700"
+            >
+              <TranslatedText textKey="remove" />
+            </button>
+          </div>
+        ))}
+
+        <div className="mt-4 p-3 border border-dashed border-gray-300 rounded-md">
+          <h4 className="text-sm font-medium mb-2">
+            <TranslatedText textKey="user.form.addSetting" />
+          </h4>
+          <div className="flex items-end space-x-2">
+            <Input
+              label="key"
+              type="text"
+              value={newSetting.target === prefix ? newSetting.key : ""}
+              onChange={(e) =>
+                setNewSetting({
+                  ...newSetting,
+                  key: e.target.value,
+                  target: prefix,
+                })
+              }
+              className="flex-grow"
+            />
+            <Input
+              label="value"
+              type="text"
+              value={newSetting.target === prefix ? newSetting.value : ""}
+              onChange={(e) =>
+                setNewSetting({
+                  ...newSetting,
+                  value: e.target.value,
+                  target: prefix,
+                })
+              }
+              className="flex-grow"
+            />
+            <button
+              type="button"
+              onClick={handleAddSetting}
+              disabled={
+                !newSetting.key ||
+                !newSetting.value ||
+                newSetting.target !== prefix
+              }
+              className="mb-4 px-4 py-2 bg-green-500 text-white dark:text-black rounded hover:bg-green-600 disabled:bg-gray-300"
+            >
+              <TranslatedText textKey="add" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 space-y-6 bg-white dark:bg-[#15181E] text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
+    >
+      <div className="flex justify-end sticky gap-2 top-0 right-0">
+        {/* Submit Button */}
+        <Button type="submit" isLoading={isLoading} disabled={isLoading}>
+          submit
+        </Button>
+        <BackButton />
+      </div>
+
+      {/* User Section */}
+      <section aria-labelledby="user-heading">
+        <h2 id="user-heading" className="text-xl font-bold mb-4">
+          <TranslatedText textKey="tenant.userInfo" />
+        </h2>
+        <div className="border-b pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {formFields
+            .filter(
+              (field: any) =>
+                field.id.startsWith("") && field.id !== "permissions"
+            )
+            .map((field: any) =>
+              field.type === "select" ? (
+                <div key={field.id} className="mb-4">
+                  <label
+                    htmlFor={field.id}
+                    className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    <TranslatedText textKey={field.label} />
+                    {field.required && <span className="text-red-500"> *</span>}
+                  </label>
+                  <select
+                    id={field.id}
+                    value={formData[field.id] as string}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                  >
+                    {field.options?.map((option: any) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <Input
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  type={field.type as any}
+                  value={
+                    field.type === "checkbox"
+                      ? undefined
+                      : (formData[field.id] as string) || ""
+                  }
+                  checked={
+                    field.type === "checkbox"
+                      ? (formData[field.id] as boolean)
+                      : undefined
+                  }
+                  onChange={handleChange}
+                  required={field.required}
+                  placeholder={
+                    field.id === "phone" ? "+11234567890" : undefined
+                  }
+                />
+              )
+            )}
+          <div className="col-span-full">
+            <h3 className="text-lg font-semibold mt-4">
+              <TranslatedText textKey="user.form.permissions" />
+            </h3>
+            {renderSettings(formData.permissions, "permissions")}
+          </div>
+        </div>
+      </section>
+    </form>
+  );
+};
+
+export default TenantStoreUserForm;

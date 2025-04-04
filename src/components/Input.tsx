@@ -56,18 +56,12 @@ const Input: React.FC<InputProps> = ({
 }) => {
   // Default styles
   const baseStyles = `
-      w-full
-      px-3
-      py-2
-      border
-      rounded-md
-      focus:outline-none
-      bg-white dark:bg-gray-700/30
-      focus:ring-1
-      focus:ring-black dark:focus:ring-white 
-      ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}
-      ${error ? "border-red-500" : "bg-gray-600"}
-    `;
+  w-full p-2 border border-gray-100 dark:border-gray-800 
+  focus:outline-0 rounded-lg bg-white dark:bg-gray-700 
+  text-gray-900 dark:text-gray-100 
+  ${disabled ? "bg-gray-100 cursor-not-allowed" : ""} 
+  ${error ? "border-red-500" : "bg-gray-600"}
+`;
 
   // Switch styles for checkbox
   const switchStyles = `

@@ -3,6 +3,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { Sidebar } from "./Sidebar";
 import { NavigationItem, Team } from "./types";
+import { useTenantStore } from "@/stores/tenantStore";
+import Image from "next/image";
 
 interface MobileSidebarProps {
   sidebarOpen: boolean;
@@ -17,12 +19,20 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
   navigation,
   teams,
 }) => {
+  const tenant = useTenantStore((state) => state.tenant);
+  
+  // Improve the handleClose function to be more reliable
+  const handleClose = () => {
+    // Simply set to false - no need for the extra parameter or timeout
+    setSidebarOpen(false);
+  };
+
   return (
     <Transition.Root show={sidebarOpen} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-50 lg:hidden"
-        onClose={setSidebarOpen}
+        onClose={handleClose}
       >
         <Transition.Child
           as={Fragment}
@@ -33,10 +43,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div
-            onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-gray-900/80"
-          />
+          <div className="fixed inset-0 bg-gray-900/80" />
         </Transition.Child>
 
         <div className="fixed inset-0 flex">
@@ -62,14 +69,11 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                 <div className="absolute top-0 left-full flex w-16 justify-center pt-5">
                   <button
                     type="button"
-                    onClick={() => setSidebarOpen(false)}
+                    onClick={handleClose}
                     className="-m-2.5 p-2.5"
                   >
                     <span className="sr-only">Close sidebar</span>
-                    {/* <XMarkIcon
-                      className="size-6 text-white"
-                      aria-hidden="true"
-                    /> */}
+                    <i className="fa-solid fa-xmark text-white text-xl"></i>
                   </button>
                 </div>
               </Transition.Child>

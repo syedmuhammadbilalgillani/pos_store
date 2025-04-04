@@ -85,15 +85,15 @@ const Modal = ({
           {/* Backdrop */}
           <Transition.Child
             as={Fragment}
-            enter="transition-opacity duration-300"
+            enter="transition-opacity duration-300 ease-out"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="transition-opacity duration-200"
+            leave="transition-opacity duration-200 ease-in"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
             <div
-              className="fixed inset-0 bg-black opacity-50"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
               aria-hidden="true"
             />
           </Transition.Child>
@@ -109,7 +109,7 @@ const Modal = ({
             leaveTo="opacity-0 scale-95"
           >
             <Dialog.Panel
-              className={`relative w-full ${maxWidth} transform bg-white 
+              className={`relative w-full ${maxWidth} transform bg-white dark:bg-[#15181E] 
                 rounded-xl shadow-xl transition-all h-auto ${className}`}
               role="dialog"
               aria-modal="true"

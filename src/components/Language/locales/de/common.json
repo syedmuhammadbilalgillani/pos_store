@@ -1,59 +1,45 @@
 {
   "add": "Hinzufügen",
+  "back": "Zurück",
   "remove": "Entfernen",
   "key": "Schlüssel",
   "value": "Wert",
-  "action": "AKTION",
-
+  "action": "Aktion",
+  "email": "E-Mail",
+  "password": "Passwort",
+  "submit": "Absenden",
+  "next": "Weiter",
+  "previous": "Zurück",
   "nav": {
     "dashboard": "Dashboard",
-    "tenant": "Mieter",
-    "tenants": "Mieter",
+    "user": "Benutzer",
+    "users": "Benutzer",
     "create": "Erstellen"
   },
   "dashboard": {
     "title": "Dashboard"
   },
-  "tenant": {
-    "tenantInfo": "Mieterinformationen",
-    "storeInfo": "Geschäftsinformationen",
-    "userInfo": "Benutzerinformationen",
-    "storeSetting": "Geschäftseinstellungen",
-    "tenantSetting": "Mietereinstellungen",
-    "userPermission": "Benutzerberechtigungen",
-    "submit": "Absenden",
+  "user": {
     "form": {
       "addSetting": "Einstellung hinzufügen",
-      "tenantName": "Mietername",
-      "tenantContactEmail": "Mieter E-Mail",
-      "tenantContactPhone": "Mieter Telefon",
-      "tenantIsActive": "Mieter aktiv",
-      "tenantDbConnectionString": "Mieter DB Verbindung",
-
-      "storeName": "Geschäftsname",
-      "storeAddress": "Geschäftsadresse",
-      "storeCity": "Geschäftsstadt",
-      "storeState": "Geschäftsregion",
-      "storeZipCode": "Postleitzahl",
-      "storePhone": "Geschäftstelefon",
-      "storeEmail": "Geschäfts-E-Mail",
-      "storeTimezone": "Zeitzone",
-
-      "userFirstName": "Vorname",
-      "userLastName": "Nachname",
-      "userEmail": "Benutzer-E-Mail",
-      "userPasswordHash": "Passwort",
-      "userPhone": "Benutzertelefon",
-      "userRole": "Benutzerrolle",
-      "userIsActive": "Benutzer aktiv"
+      "firstName": "Vollständiger Name",
+      "lastName": "Vollständiger Name",
+      "email": "E-Mail",
+      "phone": "Telefonnummer",
+      "role": "Rolle",
+      "password": "Passwort",
+      "isActive": "Aktiver Status",
+      "lastLogin": "Letzte Anmeldung",
+      "permissions": "Berechtigungen"
     },
     "table": {
-      "name": "NAME",
-      "contactEmail": "KONTAKT E-MAIL",
-      "contactPhone": "KONTAKT TELEFON",
-      "isActive": "STATUS",
-      "dbConnectionString": "DATENBANKNAME",
-      "createdAt": "ERSTELLUNGSDATUM"
+      "fullName": "Vollständiger Name",
+      "email": "E-Mail",
+      "phone": "Telefonnummer",
+      "role": "Rolle",
+      "isActive": "Aktiver Status",
+      "lastLogin": "Letzte Anmeldung",
+      "permissions": "Berechtigungen"
     }
   }
 }

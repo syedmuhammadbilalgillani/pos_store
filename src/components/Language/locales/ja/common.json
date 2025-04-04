@@ -1,59 +1,45 @@
 {
   "add": "追加",
+  "back": "戻る",
   "remove": "削除",
   "key": "キー",
   "value": "値",
-  "action": "アクション",
-
+  "action": "操作",
+  "email": "メールアドレス",
+  "password": "パスワード",
+  "submit": "送信",
+  "next": "次へ",
+  "previous": "前へ",
   "nav": {
     "dashboard": "ダッシュボード",
-    "tenant": "テナント",
-    "tenants": "テナント一覧",
+    "user": "ユーザー",
+    "users": "ユーザー一覧",
     "create": "作成"
   },
   "dashboard": {
     "title": "ダッシュボード"
   },
-  "tenant": {
-    "tenantInfo": "テナント情報",
-    "storeInfo": "店舗情報",
-    "userInfo": "ユーザー情報",
-    "storeSetting": "店舗設定",
-    "tenantSetting": "テナント設定",
-    "userPermission": "ユーザー権限",
-    "submit": "送信",
+  "user": {
     "form": {
       "addSetting": "設定を追加",
-      "tenantName": "テナント名",
-      "tenantContactEmail": "テナント連絡用メール",
-      "tenantContactPhone": "テナント連絡先電話",
-      "tenantIsActive": "テナントの有効化",
-      "tenantDbConnectionString": "テナントのDB接続",
-
-      "storeName": "店舗名",
-      "storeAddress": "店舗住所",
-      "storeCity": "店舗の都市",
-      "storeState": "店舗の都道府県",
-      "storeZipCode": "店舗の郵便番号",
-      "storePhone": "店舗の電話番号",
-      "storeEmail": "店舗のメールアドレス",
-      "storeTimezone": "店舗のタイムゾーン",
-
-      "userFirstName": "名",
-      "userLastName": "姓",
-      "userEmail": "ユーザーのメールアドレス",
-      "userPasswordHash": "パスワード",
-      "userPhone": "ユーザーの電話番号",
-      "userRole": "ユーザーの役割",
-      "userIsActive": "ユーザーの有効化"
+      "firstName": "氏名",
+      "lastName": "氏名",
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "role": "役割",
+      "password": "パスワード",
+      "isActive": "アクティブ状態",
+      "lastLogin": "最終ログイン",
+      "permissions": "権限"
     },
     "table": {
-      "name": "名前",
-      "contactEmail": "連絡先メール",
-      "contactPhone": "連絡先電話",
-      "isActive": "ステータス",
-      "dbConnectionString": "データベース名",
-      "createdAt": "作成日"
+      "fullName": "氏名",
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "role": "役割",
+      "isActive": "アクティブ状態",
+      "lastLogin": "最終ログイン",
+      "permissions": "権限"
     }
   }
 }

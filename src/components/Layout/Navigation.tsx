@@ -4,9 +4,10 @@ import { classNames } from "./className";
 import { NavigationItem } from "./types";
 import { useState } from "react";
 import TranslatedText from "../Language/TranslatedText";
+import { UserRole } from "@/constant/types";
 
 interface NavigationProps {
-  items: NavigationItem[];
+  items:  NavigationItem[];
 }
 
 export const Navigation: React.FC<NavigationProps> = ({ items }) => {
@@ -19,7 +20,7 @@ export const Navigation: React.FC<NavigationProps> = ({ items }) => {
 
   return (
     <ul role="list" className="-mx-2 space-y-1">
-      {items.map((item) => {
+      {items?.map((item) => {
         const isActive =
           item.href === "/"
             ? pathname.startsWith("/dashboard")

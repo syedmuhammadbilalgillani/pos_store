@@ -65,6 +65,17 @@ export interface Tenant {
   updatedAt: string;
   __v: number;
 }
+export interface TenantFormData {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  timezone: string;
+  logoUrl: string;
+}
 
 export interface User {
   id?: string;

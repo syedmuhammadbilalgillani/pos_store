@@ -1,59 +1,45 @@
 {
   "add": "إضافة",
-  "remove": "إزالة",
+  "back": "رجوع",
+  "remove": "حذف",
   "key": "المفتاح",
   "value": "القيمة",
   "action": "الإجراء",
-
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "submit": "إرسال",
+  "next": "التالي",
+  "previous": "السابق",
   "nav": {
     "dashboard": "لوحة التحكم",
-    "tenant": "المستأجر",
-    "tenants": "المستأجرون",
+    "user": "مستخدم",
+    "users": "المستخدمون",
     "create": "إنشاء"
   },
   "dashboard": {
     "title": "لوحة التحكم"
   },
-  "tenant": {
-    "tenantInfo": "معلومات المستأجر",
-    "storeInfo": "معلومات المتجر",
-    "userInfo": "معلومات المستخدم",
-    "storeSetting": "إعدادات المتجر",
-    "tenantSetting": "إعدادات المستأجر",
-    "userPermission": "أذونات المستخدم",
-    "submit": "إرسال",
+  "user": {
     "form": {
       "addSetting": "إضافة إعداد",
-      "tenantName": "اسم المستأجر",
-      "tenantContactEmail": "البريد الإلكتروني للمستأجر",
-      "tenantContactPhone": "هاتف المستأجر",
-      "tenantIsActive": "المستأجر نشط",
-      "tenantDbConnectionString": "اتصال قاعدة بيانات المستأجر",
-
-      "storeName": "اسم المتجر",
-      "storeAddress": "عنوان المتجر",
-      "storeCity": "مدينة المتجر",
-      "storeState": "ولاية المتجر",
-      "storeZipCode": "الرمز البريدي للمتجر",
-      "storePhone": "هاتف المتجر",
-      "storeEmail": "البريد الإلكتروني للمتجر",
-      "storeTimezone": "المنطقة الزمنية للمتجر",
-
-      "userFirstName": "الاسم الأول",
-      "userLastName": "اسم العائلة",
-      "userEmail": "البريد الإلكتروني للمستخدم",
-      "userPasswordHash": "كلمة المرور",
-      "userPhone": "هاتف المستخدم",
-      "userRole": "دور المستخدم",
-      "userIsActive": "المستخدم نشط"
+      "firstName": "الاسم الكامل",
+      "lastName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "role": "الدور",
+      "password": "كلمة المرور",
+      "isActive": "الحالة النشطة",
+      "lastLogin": "آخر تسجيل دخول",
+      "permissions": "الصلاحيات"
     },
     "table": {
-      "name": "الاسم",
-      "contactEmail": "البريد الإلكتروني",
-      "contactPhone": "رقم الهاتف",
-      "isActive": "الحالة",
-      "dbConnectionString": "اسم قاعدة البيانات",
-      "createdAt": "تاريخ الإنشاء"
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "role": "الدور",
+      "isActive": "الحالة النشطة",
+      "lastLogin": "آخر تسجيل دخول",
+      "permissions": "الصلاحيات"
     }
   }
 }

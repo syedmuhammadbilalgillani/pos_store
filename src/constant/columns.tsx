@@ -1,29 +1,51 @@
-import { Tenant } from "./types";
 
-export const TenantColumn = [
+
+export const usersTableColumn = [
   {
-    header: "tenant.table.name",
-    accessor: (item: Tenant) => item.name,
-    align: "center" as const,
+    key: "fullName",
+    label: "user.table.fullName",
+    sortable: true,
+    render: (row: any) => `${row.firstName} ${row.lastName}`,
   },
   {
-    header: "tenant.table.email",
-    accessor: (item: Tenant) => item.email,
-    align: "center" as const,
+    key: "email",
+    label: "user.table.email",
+    sortable: true,
   },
   {
-    header: "tenant.table.phone",
-    accessor: (item: Tenant) => item.phone,
-    align: "center" as const,
+    key: "phone",
+    label: "user.table.phone",
+    sortable: true,
   },
   {
-    header: "tenant.table.createdAt",
-    accessor: (item: Tenant) => new Date(item.createdAt).toLocaleString(),
-    align: "center" as const,
+    key: "role",
+    label: "user.table.role",
+    sortable: false,
+    render: (row: any) => row.role.charAt(0).toUpperCase() + row.role.slice(1),
   },
   {
-    header: "tenant.table.updatedAt",
-    accessor: (item: Tenant) => new Date(item.updatedAt).toLocaleString(),
-    align: "center" as const,
+    key: "isActive",
+    label: "user.table.isActive",
+    sortable: false,
+    render: (row: any) => (row.isActive ? "Active" : "Inactive"),
   },
+  {
+    key: "lastLogin",
+    label: "user.table.lastLogin",
+    sortable: true,
+    render: (row: any) => new Date(row.lastLogin).toLocaleString(),
+  },
+  {
+    key: "permissions",
+    label: "user.table.permissions",
+    render: (row: any) =>
+      row.permissions
+        ? Object.entries(row.permissions).map(([key, value]) => (
+            <div key={key}>
+              <strong>{key}:</strong> {String(value)}
+            </div>
+          ))
+        : "N/A",
+  },
+ 
 ];
