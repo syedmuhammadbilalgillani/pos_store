@@ -288,6 +288,7 @@ export default function DataTable<T>({
   }, [filteredData, onSearch]);
 
   // Sort data when sortColumn changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const sortedData = useMemo(() => {
     if (!sortColumn) return filteredData;
 

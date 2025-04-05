@@ -143,7 +143,7 @@ const EditStore = React.memo(() => {
       } catch (error) {
         setIsLoading(false);
 
-        toast.error("Failed to update store details");
+        toast.error(`Failed to update store details: ${error}`);
         // console.error("Error updating store:", error);
       }
     },
@@ -221,4 +221,8 @@ const EditStore = React.memo(() => {
     </>
   );
 });
+
+// Add display name to the component
+EditStore.displayName = 'EditStore';
+
 export default EditStore;

@@ -1,19 +1,17 @@
+import axiosInstance from "@/api";
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import axios from "axios";
 import Papa from "papaparse";
 import React, { useState } from "react";
-import Button from "./Button";
-import { Input } from "./ui/input";
-import axiosInstance from "@/api";
 import { toast } from "sonner";
+import Button from "./Button";
 import Spinner from "./Spinner";
+import { Input } from "./ui/input";
 
 export const users: UserDto[] = [
   {
@@ -107,6 +105,7 @@ export const users: UserDto[] = [
     isActive: true,
   },
 ];
+
 interface UserDto {
   firstName: string;
   lastName: string;
@@ -115,10 +114,12 @@ interface UserDto {
   phone: string;
   role: string;
   isActive?: boolean;
+  lastLogin?: string;
+  permissions?: Record<string, any>;
 }
 
 interface UserCsvUploaderProps {
-  refetch: () => Promise<any>;
+  refetch: (params?: any) => Promise<any>;
 }
 
 const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {

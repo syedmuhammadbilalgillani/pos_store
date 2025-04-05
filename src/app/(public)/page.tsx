@@ -56,7 +56,7 @@ export default function LoginForm() {
       }
     } catch (error: any) {
       // This catch block is for any unexpected errors in the Login function itself
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error(`An unexpected error occurred. Please try again. : ${error}`);
       // console.error("Unexpected Error:", error);
     } finally {
       setIsLoading(false);
