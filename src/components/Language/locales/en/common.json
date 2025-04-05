@@ -12,6 +12,8 @@
   "previous": "Previous",
   "nav": {
     "dashboard": "Dashboard",
+    "settings": "Setting",
+    "management": "Management",
     "user": "User",
     "users": "Users",
     "create": "Create"

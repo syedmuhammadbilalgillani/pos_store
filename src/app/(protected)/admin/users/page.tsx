@@ -1,4 +1,10 @@
 "use client";
+
+import React, { useState, useCallback, useEffect } from "react";
+import Head from "next/head";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { deleteUser, fetchUsers } from "@/api/apiFuntions";
 import Button from "@/components/Button";
 import UserCsvUploader from "@/components/CSVUploader";
@@ -6,33 +12,28 @@ import ReusableTable from "@/components/ReusableTable";
 import Spinner from "@/components/Spinner";
 import { usersTableColumn } from "@/constant/columns";
 import { useFetchData } from "@/hooks/useFetchData";
-import { useRouter } from "next/navigation";
-import React, { useState, useCallback, useEffect } from "react";
-import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // Custom debounce hook
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
   useEffect(() => {
-    // Set a timeout to update the debounced value after delay
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    // Clear the timeout if value changes or component unmounts
-    return () => {
-      clearTimeout(timer);
-    };
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
   }, [value, delay]);
-
   return debouncedValue;
 }
 
 const Users = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  // State to track all query parameters
+
   const [queryParams, setQueryParams] = useState({
     search: "",
     role: "",
@@ -44,26 +45,20 @@ const Users = () => {
     sortOrder: "desc" as "asc" | "desc",
   });
 
-  // Use our custom debounce hook
   const debouncedParams = useDebounce(queryParams, 500);
-
-  // Use the hook with debounced parameters
   const { data, loading, refetch } = useFetchData(fetchUsers, {
     initialParams: debouncedParams,
-    enabled: false, // Disable automatic fetching
+    enabled: false,
   });
 
-  // Effect to trigger API call when debounced params change
   useEffect(() => {
     refetch(debouncedParams);
   }, [debouncedParams, refetch]);
 
-  // Update parameters without immediate refetch
   const updateParams = useCallback((updates: Partial<typeof queryParams>) => {
     setQueryParams((prev) => ({
       ...prev,
       ...updates,
-      // Reset to page 1 if anything other than page changes
       page:
         "page" in updates
           ? (updates.page as number)
@@ -73,82 +68,109 @@ const Users = () => {
     }));
   }, []);
 
-  // Handler functions
   const handleSort = useCallback(
     (key: string, direction: "asc" | "desc") => {
       updateParams({ sortBy: key, sortOrder: direction });
     },
     [updateParams]
   );
+
   const handlePageChange = useCallback(
     (newPage: number) => {
-      console.log("Page change triggered:", newPage);
       updateParams({ page: newPage });
     },
     [updateParams]
   );
+
   const handleSearch = useCallback(
     (searchTerm: string) => {
       updateParams({ search: searchTerm });
     },
     [updateParams]
   );
+
   const deleteUserData = async (id: string) => {
     try {
       setIsLoading(true);
       await deleteUser(id);
       refetch(debouncedParams);
-      // console.log()
-      toast.success("Operation successfull");
-      setIsLoading(false);
+      toast.success("User deleted successfully");
     } catch (error: any) {
+      toast.error(`Error occurred: ${error?.message}`);
+    } finally {
       setIsLoading(false);
-      toast.error(`unknown error occured : ${error?.message}`);
     }
   };
+
   return (
-    <div className="p-4 parent">
+    <main className="p-4">
+      {/* SEO Metadata */}
+      <Head>
+        <title>User Management | Admin Dashboard</title>
+        <meta name="description" content="Manage users, import CSV, and perform CRUD actions in the admin panel." />
+        <meta name="robots" content="index, follow" />
+      </Head>
+
       <Spinner isLoading={isLoading} />
-      <UserCsvUploader refetch={refetch} />
 
-      <ReusableTable
-        data={data?.users || []} // Access the users array from response
-        columns={usersTableColumn}
-        defaultSort={{
-          key: queryParams.sortBy,
-          direction: queryParams.sortOrder,
-        }}
-        actions={(row) => (
-          <div className="flex gap-2 justify-center">
-            <i
-              aria-label="edit-btn"
-              className="cursor-pointer fa fa-pencil text-purple-500"
-              onClick={() => deleteUserData(row._id)}
-            ></i>
-            <i
-              aria-label="delete-btn"
-              className="cursor-pointer fa fa-trash text-red-500"
-              onClick={() => deleteUserData(row._id)}
-            ></i>
-          </div>
-        )}
-        onSort={handleSort}
-        onPageChange={handlePageChange}
-        onSearch={handleSearch}
-        currentPage={queryParams.page}
-        totalPages={data?.totalPages || 1} // Use totalPages from response
-        isLoading={loading}
-        Button={
-          <>
-            <Button onClick={() => router.push("/admin/users/create")}>
-              add
-            </Button>
+      <section className="mb-4">
+        <header>
+          <h1 className="text-2xl font-bold mb-2">User Management</h1>
+          <p className="text-sm text-muted-foreground">
+            View, search, sort, and manage users in the system.
+          </p>
+        </header>
+        <div className="flex gap-2 my-4">
+          <Button onClick={() => router.push("/admin/users/create")}>
+            Add User
+          </Button>
+          <Button onClick={() => router.back()}>Back</Button>
 
-            <Button onClick={() => router.back()}>back</Button>
-          </>
-        }
-      />
-    </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Import Users</Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-fit">
+              <DialogHeader>
+                <DialogTitle>Import Users via CSV</DialogTitle>
+              </DialogHeader>
+              <UserCsvUploader refetch={refetch} />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </section>
+
+      <section>
+        <ReusableTable
+          data={data?.users || []}
+          columns={usersTableColumn}
+          defaultSort={{
+            key: queryParams.sortBy,
+            direction: queryParams.sortOrder,
+          }}
+          actions={(row) => (
+            <div className="flex gap-2 justify-center">
+              <i
+                aria-label="Edit user"
+                className="cursor-pointer fa fa-pencil text-purple-500"
+                onClick={() => router.push(`/admin/users/edit/${row._id}`)}
+              />
+              <i
+                aria-label="Delete user"
+                className="cursor-pointer fa fa-trash text-red-500"
+                onClick={() => deleteUserData(row._id)}
+              />
+            </div>
+          )}
+          onSort={handleSort}
+          onPageChange={handlePageChange}
+          onSearch={handleSearch}
+          currentPage={queryParams.page}
+          totalPages={data?.totalPages || 1}
+          isLoading={loading}
+        />
+      </section>
+    </main>
   );
 };
 

@@ -226,7 +226,7 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
   };
 
   return (
-    <div className="pb-4 space-y-4">
+    <div className="pb-4 space-y-4 p-5 min-w-full">
       <Spinner isLoading={isLoading}></Spinner>
       <Button onClick={generateCSV} className="">
         Download Dummy CSV

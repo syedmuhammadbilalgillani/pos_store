@@ -1,6 +1,5 @@
-
 import { UserRole } from "@/constant/types";
-import { Home, Settings, Users } from "lucide-react";
+import { Home, Settings, Users, Users2 } from "lucide-react";
 
 // Role-based navigation configuration
 export const navigationByRole = {
@@ -14,24 +13,28 @@ export const navigationByRole = {
           icon: Home,
           isActive: true,
         },
-        {
-          title: "nav.settings",
-          url: "/settings",
-          icon: Settings,
-          items: [
-            { title: "General", url: "/settings/general" },
-            { title: "Profile", url: "/settings/profile" },
-          ],
-        },
+        // {
+        //   title: "nav.settings",
+        //   url: "/settings",
+        //   icon: Settings,
+        //   items: [
+        //     { title: "General", url: "/settings/general" },
+        //     { title: "Profile", url: "/settings/profile" },
+        //   ],
+        // },
       ],
     },
     {
       label: "nav.management",
       items: [
         {
-          title: "Users",
-          url: "/admin/users",
-          icon: Users,
+          title: "nav.user",
+          url: "#",
+          icon: Users2,
+          items: [
+            { title: "nav.users", url: "/admin/users" },
+            { title: "nav.create", url: "/admin/users/create" },
+          ],
         },
       ],
     },
@@ -47,18 +50,17 @@ export const navigationByRole = {
           icon: Home,
           isActive: true,
         },
-        {
-          title: "nav.settings",
-          url: "/settings",
-          icon: Settings,
-          items: [
-            { title: "General", url: "/settings/general" },
-            { title: "Profile", url: "/settings/profile" },
-          ],
-        },
+        // {
+        //   title: "nav.settings",
+        //   url: "/settings",
+        //   icon: Settings,
+        //   items: [
+        //     { title: "General", url: "/settings/general" },
+        //     { title: "Profile", url: "/settings/profile" },
+        //   ],
+        // },
       ],
     },
-   
   ],
   [UserRole.STAFF]: [
     {
@@ -70,18 +72,17 @@ export const navigationByRole = {
           icon: Home,
           isActive: true,
         },
-        {
-          title: "nav.settings",
-          url: "/settings",
-          icon: Settings,
-          items: [
-            { title: "General", url: "/settings/general" },
-            { title: "Profile", url: "/settings/profile" },
-          ],
-        },
+        // {
+        //   title: "nav.settings",
+        //   url: "/settings",
+        //   icon: Settings,
+        //   items: [
+        //     { title: "General", url: "/settings/general" },
+        //     { title: "Profile", url: "/settings/profile" },
+        //   ],
+        // },
       ],
     },
-   
   ],
 };
 
