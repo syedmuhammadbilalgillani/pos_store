@@ -1,11 +1,48 @@
 "use client";
-
 import { useUserStore } from "@/stores/userStore";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, ReactNode, useState } from "react";
-import { navigationByRole } from "./SidebarLayout/navigationItems";
-import { UserRole } from "@/constant/types";
 import Spinner from "./Spinner";
+import { UserRole } from "@/constant/types";
+
+// Define an array of roles with the corresponding paths
+export const rolesNavigation = [
+  {
+    role: "admin" as UserRole,
+    paths: [
+      { title: "Dashboard", url: "/dashboard" },
+      { title: "Overview", url: "/dashboard/overview" },
+      { title: "Statistics", url: "/dashboard/statistics" },
+      { title: "User Management", url: "/user-management" },
+      { title: "Users", url: "/user-management/users" },
+      { title: "Roles", url: "/user-management/roles" },
+      { title: "Settings", url: "/settings" },
+      { title: "General", url: "/settings/general" },
+      { title: "Security", url: "/settings/security" },
+    ],
+  },
+  {
+    role: "manager" as UserRole,
+    paths: [
+      { title: "Dashboard", url: "/dashboard" },
+      { title: "Overview", url: "/dashboard/overview" },
+      { title: "Reports", url: "/dashboard/reports" },
+      { title: "Projects", url: "/projects" },
+      { title: "Active Projects", url: "/projects/active" },
+      { title: "Completed Projects", url: "/projects/completed" },
+    ],
+  },
+  {
+    role: "staff" as UserRole,
+    paths: [
+      { title: "Dashboard", url: "/dashboard" },
+      { title: "Overview", url: "/dashboard/overview" },
+      { title: "Profile", url: "/profile" },
+      { title: "View Profile", url: "/profile/view" },
+      { title: "Edit Profile", url: "/profile/edit" },
+    ],
+  },
+];
 
 interface RoleGuardProps {
   children: ReactNode;
@@ -17,51 +54,45 @@ const RoleGuard = ({ children }: RoleGuardProps) => {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
 
-  const allowedUrls = useMemo(() => {
-    if (!user?.role) return [];
+  // // Function to check if the current pathname is allowed for the user's role
+  // const isPathAllowed = (userRole: UserRole, currentPath: string) => {
+  //   // Check if the path starts with any restricted paths based on role
+  //   if (userRole === "admin") {
+  //     if (currentPath.startsWith("/manager") || currentPath.startsWith("/staff")) {
+  //       return false;
+  //     }
+  //   } else if (userRole === "manager") {
+  //     if (currentPath.startsWith("/admin") || currentPath.startsWith("/staff")) {
+  //       return false;
+  //     }
+  //   } else if (userRole === "staff") {
+  //     if (currentPath.startsWith("/admin") || currentPath.startsWith("/manager")) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // };
 
-    const roleNav = navigationByRole[user.role as UserRole] || [];
-    const urls: string[] = [];
+  // useEffect(() => {
+  //   setIsLoading(true);
 
-    // Define interface that matches your navigation structure
-    interface NavItem {
-      title: string;
-      url: string;
-      icon?: any;
-      isActive?: boolean;
-      items?: Array<{ title: string; url: string }>;
-    }
+  //   if (!user) {
+  //     router.replace("/login");
+  //     return;
+  //   }
 
-    roleNav.forEach((section) => {
-      section.items.forEach((item: NavItem) => {
-        urls.push(item.url);
-        if (item.items && Array.isArray(item.items)) {
-          item.items.forEach((subItem) => urls.push(subItem.url));
-        }
-      });
-    });
+  //   // Check if the current path is allowed based on the user's role
+  //   if (!isPathAllowed(user.role, pathname)) {
+  //     router.replace("/dashboard");
+  //   }
 
-    return urls;
-  }, [user]);
+  //   setIsLoading(false);
+  // }, [user, pathname, router]);
 
-  useEffect(() => {
-    setIsLoading(true);
-
-    if (!user) {
-      router.replace("/login");
-      return;
-    }
-
-    if (!allowedUrls.includes(pathname)) {
-      router.replace("/dashboard");
-    }
-
-    setIsLoading(false);
-  }, [user, pathname, allowedUrls, router]);
-
-  <Spinner isLoading={isLoading} />;
-
-  return <>{children}</>;
+  // Show spinner while loading
+  // if (isLoading) {
+  //   return <Spinner isLoading={isLoading} />;
+  // }
 
   return <>{children}</>;
 };

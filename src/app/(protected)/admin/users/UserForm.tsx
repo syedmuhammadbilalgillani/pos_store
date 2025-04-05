@@ -2,37 +2,50 @@
 import axiosInstance from "@/api";
 import BackButton from "@/components/BackButton";
 import Button from "@/components/Button";
-import Input from "@/components/Input"; // Your reusable Input component
+import Input from "@/components/Input";
 import TranslatedText from "@/components/Language/TranslatedText";
 import Spinner from "@/components/Spinner";
 import { UserRole } from "@/constant/types";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-const TenantStoreUserForm: React.FC = () => {
-  const router = useRouter();
-  const [formData, setFormData] = useState<any>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    passwordHash: "",
-    phone: "",
-    role: UserRole.ADMIN,
-    isActive: true,
-    permissions: {},
-  });
+interface UserFormProps {
+  initialData?: Partial<typeof defaultFormData> | any;
+  mode?: "create" | "edit";
+}
 
+const defaultFormData = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  passwordHash: "",
+  phone: "",
+  role: UserRole.ADMIN,
+  isActive: true,
+  permissions: {},
+};
+
+const UserForm: React.FC<UserFormProps> = ({
+  initialData,
+  mode = "create",
+}) => {
+  const router = useRouter();
+  const [formData, setFormData] = useState(defaultFormData);
+  const [isLoading, setIsLoading] = useState(false);
   const [newSetting, setNewSetting] = useState({
     key: "",
     value: "",
-    target: "", // 'tenant_settings', 'store_settings', or 'permissions'
+    target: "",
   });
 
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  useEffect(() => {
+    if (initialData) {
+      setFormData({ ...defaultFormData, ...initialData });
+    }
+  }, [initialData]);
 
   const formFields: any = [
-    // User Fields
     {
       id: "firstName",
       label: "user.form.firstName",
@@ -45,24 +58,8 @@ const TenantStoreUserForm: React.FC = () => {
       type: "text",
       required: true,
     },
-    {
-      id: "email",
-      label: "user.form.email",
-      type: "email",
-      required: true,
-    },
-    {
-      id: "passwordHash",
-      label: "user.form.password",
-      type: "password",
-      required: true,
-    },
-    {
-      id: "phone",
-      label: "user.form.phone",
-      type: "tel",
-      required: true,
-    },
+    { id: "email", label: "user.form.email", type: "email", required: true },
+    { id: "phone", label: "user.form.phone", type: "tel", required: true },
     {
       id: "role",
       label: "user.form.role",
@@ -70,11 +67,17 @@ const TenantStoreUserForm: React.FC = () => {
       options: Object.values(UserRole),
       required: true,
     },
-    {
-      id: "isActive",
-      label: "user.form.isActive",
-      type: "checkbox",
-    },
+    { id: "isActive", label: "user.form.isActive", type: "checkbox" },
+    ...(mode === "create"
+      ? [
+          {
+            id: "passwordHash",
+            label: "user.form.password",
+            type: "password",
+            required: true,
+          },
+        ]
+      : []),
   ];
 
   const handleChange = (
@@ -83,28 +86,19 @@ const TenantStoreUserForm: React.FC = () => {
     const { id, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
 
-    // Special handling for phone numbers
     if (id === "phone") {
-      // Remove all non-digit characters except the plus sign
       let formattedPhone = value.replace(/[^\d+]/g, "");
-
-      // Ensure it starts with a plus sign
       if (formattedPhone && !formattedPhone.startsWith("+")) {
         formattedPhone = "+" + formattedPhone;
       }
-
-      setFormData((prev: any) => ({
-        ...prev,
-        [id]: formattedPhone,
-      }));
+      setFormData((prev) => ({ ...prev, [id]: formattedPhone }));
     } else {
-      setFormData((prev: any) => ({
+      setFormData((prev) => ({
         ...prev,
         [id]: type === "checkbox" ? checked : value,
       }));
     }
   };
-
   const handleAddSetting = () => {
     if (!newSetting.key || !newSetting.value || !newSetting.target) return;
 
@@ -132,61 +126,55 @@ const TenantStoreUserForm: React.FC = () => {
       return { ...prev, [prefix]: currentSettings };
     });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Ensure permissions is an object, not a string
-      const payload = {
-        ...formData,
-      };
+      const payload = { ...formData } as Record<string, any>;
 
-      const response = await axiosInstance.post("/user/add", payload);
-      // console.log("Form submitted successfully:", response.data);
-
-      // Display success message
-      if (response.data.success) {
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          passwordHash: "",
-          phone: "",
-          role: UserRole.ADMIN,
-          isActive: true,
-          permissions: {},
+      if (mode === "edit") {
+        // Remove unwanted properties
+        const fieldsToRemove = [
+          "passwordHash",
+          "isActive",
+          "permissions",
+          "_id",
+          "lastLogin",
+          "createdAt",
+          "updatedAt",
+          "__v",
+        ];
+        fieldsToRemove.forEach((field) => {
+          if (field in payload) delete payload[field];
         });
-        toast.success(response.data.message); // or use a toast notification library
+      }
+
+      const response =
+        mode === "edit"
+          ? await axiosInstance.put(`/user/${initialData._id}`, payload)
+          : await axiosInstance.post("/user/add", payload);
+
+      if (response.data.success) {
+        toast.success(response.data.message);
         router.push("/admin/users");
       } else {
-        toast.error(response.data.message); // or use a toast notification library
+        toast.error(response.data.message);
       }
     } catch (error: any) {
-      if (error) {
-        // Handle nested message object structure
-        if (error.message.message && Array.isArray(error.message.message)) {
-          error.message.message.forEach((msg: string) => toast.error(msg));
-        }
-        // Handle direct array in message
-        else if (Array.isArray(error.message)) {
-          error.message.forEach((msg: string) => toast.error(msg));
-        }
-        // Handle string message
-        else {
-          toast.error(
-            typeof error.message === "string"
-              ? error.message
-              : "An error occurred"
-          );
-        }
+      if (error.message?.message && Array.isArray(error.message.message)) {
+        error.message.message.forEach((msg: string) => toast.error(msg));
+      } else if (Array.isArray(error.message)) {
+        error.message.forEach((msg: string) => toast.error(msg));
       } else {
-        toast.error("An unexpected error occurred. Please try again.");
+        toast.error(
+          typeof error.message === "string"
+            ? error.message
+            : "An error occurred"
+        );
       }
-      // ... existing code ...
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 
@@ -201,10 +189,10 @@ const TenantStoreUserForm: React.FC = () => {
               type="text"
               value={value}
               onChange={(e) =>
-                setFormData((prev: any) => ({
+                setFormData((prev) => ({
                   ...prev,
                   [prefix]: {
-                    ...(prev[prefix as keyof any] as any),
+                    ...(prev[prefix as keyof typeof prev] || {}),
                     [key]: e.target.value,
                   },
                 }))
@@ -220,7 +208,6 @@ const TenantStoreUserForm: React.FC = () => {
             </button>
           </div>
         ))}
-
         <div className="mt-4 p-3 border border-dashed border-gray-300 rounded-md">
           <h4 className="text-sm font-medium mb-2">
             <TranslatedText textKey="user.form.addSetting" />
@@ -278,24 +265,19 @@ const TenantStoreUserForm: React.FC = () => {
         className="p-4 space-y-6 bg-white dark:bg-[#171717] rounded-md text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
       >
         <div className="flex justify-end sticky gap-2 top-0 right-0">
-          {/* Submit Button */}
           <Button type="submit" isLoading={isLoading} disabled={isLoading}>
             submit
           </Button>
           <BackButton />
         </div>
 
-        {/* User Section */}
         <section aria-labelledby="user-heading">
           <h2 id="user-heading" className="text-xl font-bold mb-4">
             <TranslatedText textKey="tenant.userInfo" />
           </h2>
           <div className="border-b pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {formFields
-              .filter(
-                (field: any) =>
-                  field.id.startsWith("") && field.id !== "permissions"
-              )
+              .filter((field: any) => field.id !== "permissions")
               .map((field: any) =>
                 field.type === "select" ? (
                   <div key={field.id} className="mb-4">
@@ -310,7 +292,9 @@ const TenantStoreUserForm: React.FC = () => {
                     </label>
                     <select
                       id={field.id}
-                      value={formData[field.id] as string}
+                      value={
+                        formData[field.id as keyof typeof formData] as string
+                      }
                       onChange={handleChange}
                       className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                     >
@@ -330,11 +314,15 @@ const TenantStoreUserForm: React.FC = () => {
                     value={
                       field.type === "checkbox"
                         ? undefined
-                        : (formData[field.id] as string) || ""
+                        : (formData[
+                            field.id as keyof typeof formData
+                          ] as string) || ""
                     }
                     checked={
                       field.type === "checkbox"
-                        ? (formData[field.id] as boolean)
+                        ? (formData[
+                            field.id as keyof typeof formData
+                          ] as boolean)
                         : undefined
                     }
                     onChange={handleChange}
@@ -358,4 +346,4 @@ const TenantStoreUserForm: React.FC = () => {
   );
 };
 
-export default TenantStoreUserForm;
+export default UserForm;

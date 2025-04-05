@@ -34,6 +34,7 @@ export const navigationByRole = {
           items: [
             { title: "nav.users", url: "/admin/users" },
             { title: "nav.create", url: "/admin/users/create" },
+            // { title: "id", url: "/admin/users/:id" },
           ],
         },
       ],

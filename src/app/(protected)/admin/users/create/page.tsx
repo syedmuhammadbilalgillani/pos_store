@@ -1,7 +1,8 @@
+import Spinner from "@/components/Spinner";
 import dynamic from "next/dynamic";
 
 const UserForm = dynamic(() => import("../UserForm"), {
-  loading: () => <p>Loading...</p>,
+  loading: () => <Spinner isLoading={true}/>,
 });
 const Page = () => {
   return (

@@ -153,7 +153,7 @@ const Users = () => {
               <i
                 aria-label="Edit user"
                 className="cursor-pointer fa fa-pencil text-purple-500"
-                onClick={() => router.push(`/admin/users/edit/${row._id}`)}
+                onClick={() => router.push(`/admin/users/${row._id}`)}
               />
               <i
                 aria-label="Delete user"
