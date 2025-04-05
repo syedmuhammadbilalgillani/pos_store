@@ -1,14 +1,10 @@
-import Layout from "@/components/Layout/Layout";
+import AppSidebar from "@/components/SidebarLayout/AppSidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import type { Metadata } from "next";
-
-// import "./font-6/css/sharp-thin.css";
-// import "./font-6/css/sharp-duotone-light.css";
-// import "./font-6/css/sharp-duotone-regular.css";
-// import "./font-6/css/sharp-duotone-solid.css";
-// import "./font-6/css/sharp-duotone-thin.css";
-// import "./font-6/css/duotone-light.css";
-// import "./font-6/css/duotone-regular.css";
-// import "./font-6/css/duotone-thin.css";
 
 export const metadata: Metadata = {
   title: "STORE | SA",
@@ -23,18 +19,26 @@ export default function RootLayout({
   return (
     <main
       data-theme="system"
-      // className={`
-
-      //   [&::-webkit-scrollbar]:w-1.5
-      // [&::-webkit-scrollbar-track]:bg-gray-100
-      // [&::-webkit-scrollbar-thumb]:bg-gray-300
-      //   [&::-webkit-scrollbar-thumb]:cursor-point
-      // dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-      // dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
-      // `}
       suppressHydrationWarning
+      // className="min-h-screen"
+      className={`
+
+        [&::-webkit-scrollbar]:w-1.5
+      [&::-webkit-scrollbar-track]:bg-gray-100
+      [&::-webkit-scrollbar-thumb]:bg-gray-300
+        [&::-webkit-scrollbar-thumb]:cursor-point
+      dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+      dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
+      `}
     >
-      <Layout>{children}</Layout>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset className="p-4">
+          <SidebarTrigger />
+
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
     </main>
   );
 }

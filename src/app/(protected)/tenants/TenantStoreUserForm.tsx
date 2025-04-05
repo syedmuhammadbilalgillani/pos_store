@@ -3,7 +3,7 @@ import axiosInstance from "@/api";
 import Button from "@/components/Button";
 import Input from "@/components/Input"; // Your reusable Input component
 import TranslatedText from "@/components/Language/TranslatedText";
-import { toast } from "@/components/Toast/toast_manager";
+import { toast } from "sonner";
 import { FormField, TenantStoreUserDto, UserRole } from "@/constant/types";
 import React, { useState } from "react";
 

@@ -1,7 +1,7 @@
 "use client";
 import { fetchStoreData } from "@/api/apiFuntions";
 import DataTable from "@/components/DataTable";
-import { TenantColumn } from "@/constant/columns";
+// import { TenantColumn } from "@/constant/columns";
 import { Tenant } from "@/constant/types";
 import { useFetchData } from "@/hooks/useFetchData";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ const Tenants = () => {
       <div className="max-w-dvw bg-white dark:bg-[#15181E]  p-5">
         {/* <button onClick={() => refetch()}>refech</button> */}
         <DataTable
-          columns={TenantColumn}
+          columns={[]}
           data={data ?? []}
           loading={loading} // Date filter configuration
           enableDateFilter={true}

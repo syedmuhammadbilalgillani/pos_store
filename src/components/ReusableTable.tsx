@@ -1,5 +1,15 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import TranslatedText from "./Language/TranslatedText";
+import Spinner from "./Spinner";
+import { Input } from "./ui/input";
 
 interface Column {
   key: string;
@@ -29,20 +39,6 @@ interface ReusableTableProps {
   actions?: (row: any) => React.ReactNode;
 }
 
-// 🔷 Tailwind Styles
-const TABLE_PARENT =
-  "overflow-auto min-w-full bg-white dark:bg-[#15181E] p-4 rounded-xl md:rounded-2xl";
-const TABLE_CLASSES =
-  "min-w-full table-auto border-separate border-spacing-0 text-sm sm:text-base";
-const THEAD_PARENT = "mb-4";
-const THEAD_CLASSES =
-  "text-gray-500 dark:text-gray-200 bg-[#F8F9FB] dark:bg-gray-700 shadow-sm rounded-lg text-sm sm:text-base";
-const TH_CLASSES = "py-3 px-4 sm:px-6 font-medium text-left whitespace-nowrap";
-const TD_CLASSES =
-  "py-3 px-4 sm:px-6 font-normal text-left text-sm dark:text-gray-300";
-const TBODY_PARENT = "bg-white dark:bg-[#15181E]";
-const ROW_CLASSES =
-  "border-b border-gray-100 dark:border-gray-700 transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-800";
 
 const ReusableTable: React.FC<ReusableTableProps> = React.memo(
   ({
@@ -119,25 +115,18 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
 
     const renderTableHeader = useMemo(
       () => (
-        <thead className={THEAD_CLASSES}>
-          <tr>
-            <th scope="col" className={`${TH_CLASSES} rounded-tl-xl`}>
-              #
-            </th>
+        <TableHeader className="bg-sidebar ">
+          <TableRow >
+            <TableHead className="rounded-tl-lg">#</TableHead>
             {columns.map((column, index) => (
-              <th
-                key={column.key}
-                scope="col"
-                className={`${TH_CLASSES} ${
-                  column.sortable ? "cursor-pointer select-none" : ""
-                } ${
-                  index === columns.length - 1 && !actions
-                    ? "rounded-tr-2xl"
-                    : ""
-                }`}
+              <TableHead
+                key={index}
                 onClick={
                   column.sortable ? () => handleSort(column.key) : undefined
                 }
+                className={`${
+                  column.sortable ? "cursor-pointer select-none" : "" 
+                }`}
               >
                 <div className="flex items-center gap-1">
                   <TranslatedText textKey={`${column.label}`} />
@@ -155,112 +144,99 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
                     </span>
                   )}
                 </div>
-              </th>
+              </TableHead>
             ))}
             {actions && (
-              <th className={`${TH_CLASSES} text-center rounded-tr-xl`}>
+              <TableHead className="text-center rounded-tr-lg">
                 <TranslatedText textKey="action" />
-              </th>
+              </TableHead>
             )}
-          </tr>
-        </thead>
+          </TableRow>
+        </TableHeader>
       ),
       [columns, handleSort, sortConfig, actions]
     );
-
     const renderTableBody = useMemo(() => {
-      if (isLoading) {
-        return (
-          <tr>
-            <td colSpan={columns.length + 2} className="h-40 text-center">
-              Loading...
-            </td>
-          </tr>
-        );
-      }
-
       if (data.length === 0) {
         return (
-          <tr>
-            <td colSpan={columns.length + 2} className="text-center py-4">
+          <TableRow>
+            <TableCell
+              colSpan={columns.length + 2}
+              className="text-center py-4"
+            >
               No data available.
-            </td>
-          </tr>
+            </TableCell>
+          </TableRow>
         );
       }
 
       return data.map((row, rowIndex) => (
-        <tr key={rowIndex} className={ROW_CLASSES}>
-          <td className={TD_CLASSES}>
-            {rowIndex + 1 + (currentPage - 1) * pageSize}
-          </td>
+        <TableRow  key={rowIndex}>
+          <TableCell>{rowIndex + 1 + (currentPage - 1) * pageSize}</TableCell>
           {columns.map((column) => (
-            <td key={column.key} className={TD_CLASSES}>
+            <TableCell key={column.key}>
               {column.render ? column.render(row) : row[column.key]}
-            </td>
+            </TableCell>
           ))}
           {actions && (
-            <td className={`${TD_CLASSES} text-center`}>{actions(row)}</td>
+            <TableCell className="text-center">{actions(row)}</TableCell>
           )}
-        </tr>
+        </TableRow>
       ));
     }, [isLoading, data, columns, currentPage, pageSize, actions]);
 
     return (
       <div role="table" aria-label="Data Table">
+        <Spinner isLoading={isLoading}></Spinner>
         {/* Top Controls */}
         <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4 w-full">
           <div className="w-full max-w-md">
-            <input
+            <Input
               type="search"
               aria-label="Search table"
               placeholder="Search..."
               value={searchTerm}
               onChange={handleInputChange}
-              className="w-full p-2 border border-gray-100 dark:border-gray-800 focus:outline-none rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              // className="w-full p-2 border border-gray-100 dark:border-gray-800 focus:outline-none rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div className="flex gap-2 flex-wrap">{Button && Button}</div>
         </div>
 
         {/* Table */}
-        <section className={TABLE_PARENT}>
-          <div className={THEAD_PARENT}>
-            <table className={TABLE_CLASSES}>{renderTableHeader}</table>
+        <section >
+           <div className="shadow rounded-xl dark:shadow-sidebar-accent">
+            <Table>
+              {renderTableHeader}
+              <TableBody>{renderTableBody}</TableBody>
+            </Table>
           </div>
-          <div className={TBODY_PARENT}>
-            <table className={TABLE_CLASSES}>
-              <tbody className="transition-transform duration-500">
-                {renderTableBody}
-              </tbody>
-            </table>
+
+          {/* Pagination */}
+          <div className="mt-6 flex justify-between items-center">
+            <button
+              onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+              disabled={currentPage === 1 || isLoading}
+              className="px-5 py-2.5 rounded border bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <TranslatedText textKey="previous" />
+            </button>
+
+            <span className="text-gray-700 dark:text-gray-300">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              onClick={() =>
+                currentPage < totalPages && onPageChange(currentPage + 1)
+              }
+              disabled={currentPage === totalPages || isLoading}
+              className="px-5 py-2.5 rounded border bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <TranslatedText textKey="next" />
+            </button>
           </div>
         </section>
-
-        {/* Pagination */}
-        <div className="mt-6 flex justify-between items-center">
-          <button
-            onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-            disabled={currentPage === 1 || isLoading}
-            className="px-5 py-2.5 rounded border bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <TranslatedText textKey="previous" />
-          </button>
-
-          <span className="text-gray-700 dark:text-gray-300">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={() =>
-              currentPage < totalPages && onPageChange(currentPage + 1)
-            }
-            disabled={currentPage === totalPages || isLoading}
-            className="px-5 py-2.5 rounded border bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <TranslatedText textKey="next" />
-          </button>
-        </div>
       </div>
     );
   }

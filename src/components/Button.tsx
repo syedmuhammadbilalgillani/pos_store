@@ -1,7 +1,7 @@
 import React from "react";
+import { Button as ShadcnButton } from "@/components/ui/button";
 import TranslatedText from "./Language/TranslatedText";
 
-// Define the props interface for the Button component
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
@@ -23,39 +23,40 @@ const Button: React.FC<ButtonProps> = ({
   disabled = false,
   type = "button",
   ariaLabel,
-  // className = "",
+  className = "",
 }) => {
-  // Define variant classes
+  // Custom variant styling for non-shadcn variants
   const variantClasses = {
-    primary: "bg-[#763FF9] hover:bg-[#763FF9]/80  text-white",
+    primary: "bg-[#763FF9] hover:bg-[#763FF9]/80 text-white",
     secondary: "bg-gray-500 hover:bg-gray-700 text-white",
     outline:
       "bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-50",
   };
 
-  // Define size classes
   const sizeClasses = {
     small: "px-3 py-1 text-sm",
     medium: "px-4 py-2 text-base",
     large: "px-6 py-3 text-lg",
   };
 
-  // Combine classes based on props
-  const buttonClasses = `rounded cursor-pointer transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-    variantClasses[variant]
-  } ${sizeClasses[size]} ${
-    disabled || isLoading ? "opacity-50 cursor-not-allowed" : ""
-  }`;
+  const combinedClassName = `
+    ${variantClasses[variant]}
+    ${sizeClasses[size]}
+    rounded cursor-pointer transition duration-200
+    focus:outline-none focus:ring-2 focus:ring-offset-2
+    ${disabled || isLoading ? "opacity-50 cursor-not-allowed" : ""}
+    ${className}
+  `;
 
   return (
-    <button
+    <ShadcnButton
       type={type}
       onClick={onClick}
       disabled={disabled || isLoading}
       aria-label={
         ariaLabel || (typeof children === "string" ? children : "Button")
       }
-      className={buttonClasses}
+      className={combinedClassName}
     >
       {isLoading ? (
         <div className="flex items-center justify-center">
@@ -65,7 +66,7 @@ const Button: React.FC<ButtonProps> = ({
       ) : (
         <TranslatedText textKey={children as string} />
       )}
-    </button>
+    </ShadcnButton>
   );
 };
 

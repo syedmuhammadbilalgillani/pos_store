@@ -1,18 +1,18 @@
 import { useUserStore } from "@/stores/userStore";
-import { navigation, navigationByRole } from "@/components/Layout/navigationItems";
 import { UserRole } from "@/constant/types";
+import {
+  navigation,
+  navigationByRole,
+} from "@/components/SidebarLayout/navigationItems";
 
 export const useRoleBasedNavigation = () => {
   const user = useUserStore((state) => state.user);
   
-  // If user has no role or role doesn't match defined roles, return default navigation
   if (!user?.role) {
-    return navigation;
+    // Get first item if navigation is nested array
+    return Array.isArray(navigation[0]) ? navigation[0] : navigation;
   }
   
   const userRole = user.role as UserRole;
-  
-  // Return role-specific navigation if available, otherwise return default
-//   return navigationByRole[userRole] || navigation;
-  return navigationByRole[userRole] || navigation;
+  return navigationByRole[userRole] || (Array.isArray(navigation[0]) ? navigation[0] : navigation);
 };

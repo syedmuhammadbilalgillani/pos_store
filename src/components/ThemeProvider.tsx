@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { initToasts } from "./Toast/toast_manager";
 
 const themes = [
   { value: "light", icon: "fas fa-sun text-yellow-500" },
@@ -49,9 +48,7 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       Cookies.set("theme", theme, { expires: 365 }); // Store theme in a cookie for 1 year
     }
   }, [theme, isLoading]);
-  useEffect(() => {
-    initToasts();
-  }, []);
+
   if (isLoading) {
     return null; // or a loading spinner
   }

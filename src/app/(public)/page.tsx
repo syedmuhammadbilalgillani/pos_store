@@ -2,12 +2,12 @@
 
 import { fetchStoreData, Login } from "@/api/apiFuntions";
 import TranslatedText from "@/components/Language/TranslatedText";
-import { toast } from "@/components/Toast/toast_manager";
 import { useTenantStore } from "@/stores/tenantStore";
 import { useUserStore } from "@/stores/userStore";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface LoginFormSchema {
   email: string;

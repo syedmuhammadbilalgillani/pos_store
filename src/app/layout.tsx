@@ -7,6 +7,7 @@ import "./font-6/css/sharp-light.css";
 import "./font-6/css/sharp-regular.css";
 import "./font-6/css/sharp-solid.css";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 // import "./font-6/css/sharp-thin.css";
 // import "./font-6/css/sharp-duotone-light.css";
 // import "./font-6/css/sharp-duotone-regular.css";
@@ -29,19 +30,21 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="system">
       <body
-        // className={`
+        className={`
 
-        //   [&::-webkit-scrollbar]:w-1.5
-        // [&::-webkit-scrollbar-track]:bg-gray-100
-        // [&::-webkit-scrollbar-thumb]:bg-gray-300
-        //   [&::-webkit-scrollbar-thumb]:cursor-point
-        // dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-        // dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
-        // `}
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar]:h-1.5!
+        [&::-webkit-scrollbar-track]:bg-gray-100
+        [&::-webkit-scrollbar-thumb]:bg-gray-300
+          [&::-webkit-scrollbar-thumb]:cursor-point
+        dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+        dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
+        `}
         //
         suppressHydrationWarning
       >
         <ThemeProvider>
+          <Toaster />
           <I18nClientProvider>{children} </I18nClientProvider>
         </ThemeProvider>
       </body>

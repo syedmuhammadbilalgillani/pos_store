@@ -1,11 +1,14 @@
 "use client";
 import { deleteUser, fetchUsers } from "@/api/apiFuntions";
 import Button from "@/components/Button";
+import UserCsvUploader from "@/components/CSVUploader";
 import ReusableTable from "@/components/ReusableTable";
+import Spinner from "@/components/Spinner";
 import { usersTableColumn } from "@/constant/columns";
 import { useFetchData } from "@/hooks/useFetchData";
 import { useRouter } from "next/navigation";
 import React, { useState, useCallback, useEffect } from "react";
+import { toast } from "sonner";
 
 // Custom debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -28,6 +31,7 @@ function useDebounce<T>(value: T, delay: number): T {
 
 const Users = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   // State to track all query parameters
   const [queryParams, setQueryParams] = useState({
     search: "",
@@ -89,9 +93,24 @@ const Users = () => {
     },
     [updateParams]
   );
-
+  const deleteUserData = async (id: string) => {
+    try {
+      setIsLoading(true);
+      await deleteUser(id);
+      refetch(debouncedParams);
+      // console.log()
+      toast.success("Operation successfull");
+      setIsLoading(false);
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(`unknown error occured : ${error?.message}`);
+    }
+  };
   return (
-    <div className="p-4">
+    <div className="p-4 parent">
+      <Spinner isLoading={isLoading} />
+      <UserCsvUploader refetch={refetch} />
+
       <ReusableTable
         data={data?.users || []} // Access the users array from response
         columns={usersTableColumn}
@@ -101,11 +120,16 @@ const Users = () => {
         }}
         actions={(row) => (
           <div className="flex gap-2 justify-center">
-            <Button
-              onClick={() => deleteUser(row._id).then(() => router.refresh())}
-            >
-              Delete
-            </Button>
+            <i
+              aria-label="edit-btn"
+              className="cursor-pointer fa fa-pencil text-purple-500"
+              onClick={() => deleteUserData(row._id)}
+            ></i>
+            <i
+              aria-label="delete-btn"
+              className="cursor-pointer fa fa-trash text-red-500"
+              onClick={() => deleteUserData(row._id)}
+            ></i>
           </div>
         )}
         onSort={handleSort}
@@ -119,6 +143,7 @@ const Users = () => {
             <Button onClick={() => router.push("/admin/users/create")}>
               add
             </Button>
+
             <Button onClick={() => router.back()}>back</Button>
           </>
         }

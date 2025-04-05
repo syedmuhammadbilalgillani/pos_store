@@ -4,10 +4,11 @@ import BackButton from "@/components/BackButton";
 import Button from "@/components/Button";
 import Input from "@/components/Input"; // Your reusable Input component
 import TranslatedText from "@/components/Language/TranslatedText";
-import { toast } from "@/components/Toast/toast_manager";
-import { FormField, UserRole } from "@/constant/types";
+import Spinner from "@/components/Spinner";
+import { UserRole } from "@/constant/types";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 const TenantStoreUserForm: React.FC = () => {
   const router = useRouter();
@@ -143,7 +144,7 @@ const TenantStoreUserForm: React.FC = () => {
       };
 
       const response = await axiosInstance.post("/user/add", payload);
-      console.log("Form submitted successfully:", response.data);
+      // console.log("Form submitted successfully:", response.data);
 
       // Display success message
       if (response.data.success) {
@@ -163,26 +164,27 @@ const TenantStoreUserForm: React.FC = () => {
         toast.error(response.data.message); // or use a toast notification library
       }
     } catch (error: any) {
-      console.error("Error submitting form:", error);
-
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        const messages = error.response.data.message.message;
-        if (Array.isArray(messages)) {
-          messages.forEach((msg) => toast.error(msg));
-        } else {
+      if (error) {
+        // Handle nested message object structure
+        if (error.message.message && Array.isArray(error.message.message)) {
+          error.message.message.forEach((msg: string) => toast.error(msg));
+        }
+        // Handle direct array in message
+        else if (Array.isArray(error.message)) {
+          error.message.forEach((msg: string) => toast.error(msg));
+        }
+        // Handle string message
+        else {
           toast.error(
-            typeof error.response.data.message === "string"
-              ? error.response.data.message
+            typeof error.message === "string"
+              ? error.message
               : "An error occurred"
           );
         }
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
+      // ... existing code ...
     } finally {
       setIsLoading(false); // Reset loading state
     }
@@ -269,85 +271,90 @@ const TenantStoreUserForm: React.FC = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-4 space-y-6 bg-white dark:bg-[#15181E] text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
-    >
-      <div className="flex justify-end sticky gap-2 top-0 right-0">
-        {/* Submit Button */}
-        <Button type="submit" isLoading={isLoading} disabled={isLoading}>
-          submit
-        </Button>
-        <BackButton />
-      </div>
-
-      {/* User Section */}
-      <section aria-labelledby="user-heading">
-        <h2 id="user-heading" className="text-xl font-bold mb-4">
-          <TranslatedText textKey="tenant.userInfo" />
-        </h2>
-        <div className="border-b pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {formFields
-            .filter(
-              (field: any) =>
-                field.id.startsWith("") && field.id !== "permissions"
-            )
-            .map((field: any) =>
-              field.type === "select" ? (
-                <div key={field.id} className="mb-4">
-                  <label
-                    htmlFor={field.id}
-                    className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    <TranslatedText textKey={field.label} />
-                    {field.required && <span className="text-red-500"> *</span>}
-                  </label>
-                  <select
-                    id={field.id}
-                    value={formData[field.id] as string}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
-                  >
-                    {field.options?.map((option: any) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <Input
-                  key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  type={field.type as any}
-                  value={
-                    field.type === "checkbox"
-                      ? undefined
-                      : (formData[field.id] as string) || ""
-                  }
-                  checked={
-                    field.type === "checkbox"
-                      ? (formData[field.id] as boolean)
-                      : undefined
-                  }
-                  onChange={handleChange}
-                  required={field.required}
-                  placeholder={
-                    field.id === "phone" ? "+11234567890" : undefined
-                  }
-                />
-              )
-            )}
-          <div className="col-span-full">
-            <h3 className="text-lg font-semibold mt-4">
-              <TranslatedText textKey="user.form.permissions" />
-            </h3>
-            {renderSettings(formData.permissions, "permissions")}
-          </div>
+    <>
+      <Spinner isLoading={isLoading}></Spinner>
+      <form
+        onSubmit={handleSubmit}
+        className="p-4 space-y-6 bg-white dark:bg-[#171717] rounded-md text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
+      >
+        <div className="flex justify-end sticky gap-2 top-0 right-0">
+          {/* Submit Button */}
+          <Button type="submit" isLoading={isLoading} disabled={isLoading}>
+            submit
+          </Button>
+          <BackButton />
         </div>
-      </section>
-    </form>
+
+        {/* User Section */}
+        <section aria-labelledby="user-heading">
+          <h2 id="user-heading" className="text-xl font-bold mb-4">
+            <TranslatedText textKey="tenant.userInfo" />
+          </h2>
+          <div className="border-b pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {formFields
+              .filter(
+                (field: any) =>
+                  field.id.startsWith("") && field.id !== "permissions"
+              )
+              .map((field: any) =>
+                field.type === "select" ? (
+                  <div key={field.id} className="mb-4">
+                    <label
+                      htmlFor={field.id}
+                      className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      <TranslatedText textKey={field.label} />
+                      {field.required && (
+                        <span className="text-red-500"> *</span>
+                      )}
+                    </label>
+                    <select
+                      id={field.id}
+                      value={formData[field.id] as string}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    >
+                      {field.options?.map((option: any) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <Input
+                    key={field.id}
+                    id={field.id}
+                    label={field.label}
+                    type={field.type as any}
+                    value={
+                      field.type === "checkbox"
+                        ? undefined
+                        : (formData[field.id] as string) || ""
+                    }
+                    checked={
+                      field.type === "checkbox"
+                        ? (formData[field.id] as boolean)
+                        : undefined
+                    }
+                    onChange={handleChange}
+                    required={field.required}
+                    placeholder={
+                      field.id === "phone" ? "+11234567890" : undefined
+                    }
+                  />
+                )
+              )}
+            <div className="col-span-full">
+              <h3 className="text-lg font-semibold mt-4">
+                <TranslatedText textKey="user.form.permissions" />
+              </h3>
+              {renderSettings(formData.permissions, "permissions")}
+            </div>
+          </div>
+        </section>
+      </form>
+    </>
   );
 };
 

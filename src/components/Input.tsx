@@ -1,8 +1,8 @@
 "use client";
 import React, { ChangeEvent, InputHTMLAttributes } from "react";
+import { Input as ShadcnInput } from "@/components/ui/input";
 import TranslatedText from "./Language/TranslatedText";
 
-// Define all possible input types
 type InputType =
   | "text"
   | "password"
@@ -27,7 +27,6 @@ type InputType =
   | "reset"
   | "button";
 
-// Define props interface extending HTML input attributes
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   type?: InputType;
@@ -38,9 +37,9 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   disabled?: boolean;
   required?: boolean;
+  checked?: boolean;
 }
 
-// Reusable Input Component
 const Input: React.FC<InputProps> = ({
   label,
   type = "text",
@@ -54,48 +53,22 @@ const Input: React.FC<InputProps> = ({
   checked,
   ...restProps
 }) => {
-  // Default styles
-  const baseStyles = `
-  w-full p-2 border border-gray-100 dark:border-gray-800 
-  focus:outline-0 rounded-lg bg-white dark:bg-gray-700 
-  text-gray-900 dark:text-gray-100 
-  ${disabled ? "bg-gray-100 cursor-not-allowed" : ""} 
-  ${error ? "border-red-500" : "bg-gray-600"}
-`;
-
-  // Switch styles for checkbox
   const switchStyles = `
-      relative
-      inline-block
-      w-10
-      h-6
-      rounded-full
-      ${checked ? "bg-gray-600" : "bg-gray-400"}
-      transition-colors
-      duration-200
-      ease-in-out
-      ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-      ${error ? "border-red-500" : ""}
-    `;
+    relative inline-block w-10 h-6 rounded-full 
+    ${checked ? "bg-gray-600" : "bg-gray-400"}
+    transition-colors duration-200 ease-in-out 
+    ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} 
+    ${error ? "border border-red-500" : ""}
+  `;
 
   const switchThumbStyles = `
-      absolute
-      left-1
-      top-1
-      w-4
-      h-4
-      rounded-full
-      bg-white
-      transition-transform
-      duration-200
-      ease-in-out
-      ${checked ? "translate-x-4" : "translate-x-0"}
-    `;
+    absolute left-1 top-1 w-4 h-4 rounded-full bg-white 
+    transition-transform duration-200 ease-in-out 
+    ${checked ? "translate-x-4" : "translate-x-0"}
+  `;
 
-  // Create a handler for the switch to toggle the hidden checkbox
   const handleSwitchClick = () => {
     if (!disabled && onChange) {
-      // Create a synthetic event to mimic checkbox change
       const syntheticEvent = {
         target: {
           type: "checkbox",
@@ -104,7 +77,6 @@ const Input: React.FC<InputProps> = ({
           name: restProps.name,
         },
       } as React.ChangeEvent<HTMLInputElement>;
-
       onChange(syntheticEvent);
     }
   };
@@ -112,14 +84,17 @@ const Input: React.FC<InputProps> = ({
   return (
     <div className="mb-4">
       {label && (
-        <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-white">
+        <label
+          htmlFor={restProps.id}
+          className="block mb-1 text-sm font-medium text-gray-700 dark:text-white"
+        >
           <TranslatedText textKey={label} />
-
           {required && <span className="text-red-500"> *</span>}
         </label>
       )}
+
       {type === "checkbox" ? (
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <div
             className={switchStyles}
             onClick={handleSwitchClick}
@@ -140,23 +115,25 @@ const Input: React.FC<InputProps> = ({
           />
         </div>
       ) : (
-        <input
+        <ShadcnInput
           type={type}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
           disabled={disabled}
           required={required}
-          className={`${baseStyles} ${className}`}
+          className={`${error ? "border-red-500" : ""} ${className}`}
           {...restProps}
         />
       )}
+
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   );
 };
 
 export default Input;
+
 
 // Example usage component
 // const ExampleUsage: React.FC = () => {
