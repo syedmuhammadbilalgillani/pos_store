@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePermissionStore } from "@/stores/permissionStore";
 import { useTenantStore } from "@/stores/tenantStore";
 import { useUserStore } from "@/stores/userStore";
 import Cookies from "js-cookie";
