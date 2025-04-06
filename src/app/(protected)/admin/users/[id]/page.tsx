@@ -17,7 +17,7 @@ const EditUserPage = () => {
         const response = await axiosInstance.get(`/user/${params.id}`);
         console.log(response, "res");
         if (response.status === 200) {
-          setUserData(response.data);
+          setUserData(response?.data?.data??{});
         } else {
           toast.error(response.data.message || "Failed to fetch user data");
         }

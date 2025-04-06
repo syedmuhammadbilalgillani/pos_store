@@ -9,6 +9,10 @@ import { UserRole } from "@/constant/types";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useFetchData } from "@/hooks/useFetchData";
+import { fetchRoles } from "@/api/apiFuntions";
+import { usePermission } from "@/hooks/usePermission";
+import { PERMISSIONS } from "@/constant/permissions";
 
 interface UserFormProps {
   initialData?: Partial<typeof defaultFormData> | any;
@@ -21,7 +25,7 @@ const defaultFormData = {
   email: "",
   passwordHash: "",
   phone: "",
-  role: UserRole.ADMIN,
+  roleId: "",
   isActive: true,
   permissions: {},
 };
@@ -37,6 +41,13 @@ const UserForm: React.FC<UserFormProps> = ({
     key: "",
     value: "",
     target: "",
+  });
+  const { hasPermission } = usePermission();
+
+  const shouldFetchUsers = hasPermission(PERMISSIONS.CREATE_USER);
+
+  const { data: roles, loading } = useFetchData(fetchRoles, {
+    enabled: shouldFetchUsers,
   });
 
   useEffect(() => {
@@ -61,10 +72,10 @@ const UserForm: React.FC<UserFormProps> = ({
     { id: "email", label: "user.form.email", type: "email", required: true },
     { id: "phone", label: "user.form.phone", type: "tel", required: true },
     {
-      id: "role",
+      id: "roleId",
       label: "user.form.role",
       type: "select",
-      options: Object.values(UserRole),
+      options: roles ?? [],
       required: true,
     },
     { id: "isActive", label: "user.form.isActive", type: "checkbox" },
@@ -142,6 +153,8 @@ const UserForm: React.FC<UserFormProps> = ({
           "lastLogin",
           "createdAt",
           "updatedAt",
+          "role",
+          "customPermissions",
           "__v",
         ];
         fieldsToRemove.forEach((field) => {
@@ -182,9 +195,10 @@ const UserForm: React.FC<UserFormProps> = ({
       <div className="space-y-3">
         {Object.entries(settings).map(([key, value]) => (
           <div key={`${prefix}_${key}`} className="flex items-center space-x-2">
+            {/* <div>{key}</div> */}
             <Input
               id={`${prefix}_${key}`}
-              label={key}
+              // label={key}
               type="text"
               value={value}
               onChange={(e) =>
@@ -201,9 +215,12 @@ const UserForm: React.FC<UserFormProps> = ({
             <button
               type="button"
               onClick={() => handleRemoveSetting(prefix, key)}
-              className="mt-7 p-2 text-red-500 hover:text-red-700"
+              className=" p-2 text-red-500 hover:text-red-700"
             >
-              <TranslatedText textKey="remove" />
+              <i
+                aria-label="Delete user"
+                className="cursor-pointer fa-duotone fa-trash-can text-red-500 hover:text-red-700 transition-colors duration-200 text-lg mb-3"
+              />
             </button>
           </div>
         ))}
@@ -255,16 +272,16 @@ const UserForm: React.FC<UserFormProps> = ({
       </div>
     );
   };
-
+  console.log(roles, "roles");
   return (
     <>
-      <Spinner isLoading={isLoading}></Spinner>
+      <Spinner isLoading={isLoading || loading}></Spinner>
       <form
         onSubmit={handleSubmit}
         className="p-4 space-y-6 bg-white dark:bg-[#171717] rounded-md text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
       >
         <div className="flex justify-end sticky gap-2 top-0 right-0">
-          <Button type="submit"  disabled={isLoading}>
+          <Button type="submit" disabled={isLoading}>
             submit
           </Button>
           <BackButton />
@@ -297,9 +314,10 @@ const UserForm: React.FC<UserFormProps> = ({
                       onChange={handleChange}
                       className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                     >
-                      {field.options?.map((option: any) => (
-                        <option key={option} value={option}>
-                          {option}
+                      <option value="">Select Role</option>
+                      {field?.options?.map((option: any) => (
+                        <option key={option._id} value={option?._id}>
+                          {option?.name}
                         </option>
                       ))}
                     </select>

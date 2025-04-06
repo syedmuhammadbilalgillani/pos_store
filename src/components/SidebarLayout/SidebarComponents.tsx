@@ -93,9 +93,11 @@ export function NavMain({
       url: string;
       icon?: LucideIcon;
       isActive?: boolean;
+      requiredPermissions?: string[];
       items?: {
         title: string;
         url: string;
+        requiredPermissions?: string[];
       }[];
     }[];
   }[];
@@ -104,7 +106,9 @@ export function NavMain({
     <>
       {items?.map((group) => (
         <SidebarGroup key={group?.label}>
-          <SidebarGroupLabel><TranslatedText textKey={group?.label}/></SidebarGroupLabel>
+          <SidebarGroupLabel>
+            <TranslatedText textKey={group?.label} />
+          </SidebarGroupLabel>
           <SidebarMenu>
             {group?.items?.map((item) =>
               item?.items && item?.items?.length > 0 ? (
@@ -130,7 +134,9 @@ export function NavMain({
                           <SidebarMenuSubItem key={subItem?.title}>
                             <SidebarMenuSubButton asChild>
                               <Link href={subItem?.url}>
-                                <span><TranslatedText textKey={subItem?.title}/></span>
+                                <span>
+                                  <TranslatedText textKey={subItem?.title} />
+                                </span>
                               </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
@@ -167,11 +173,12 @@ export const SidebarFooterMenu = () => {
     try {
       const res = await Logout();
       toast.success(res.message);
-      Cookies.remove("accessToken");
-      Cookies.remove("userRole");
-      
-      clearUser();
       clearTenant();
+      clearUser();
+      Cookies.remove("accessToken");
+      Cookies.remove("user-storage");
+      Cookies.remove("tenant-storage");
+
       router.push("/");
       localStorage.clear();
     } catch (error: unknown) {

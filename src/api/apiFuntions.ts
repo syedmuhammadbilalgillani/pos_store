@@ -53,11 +53,18 @@ export const Logout = async () => {
     throw error;
   }
 };
-
+export const fetchRoles = async () => {
+  try {
+    const res = await axiosInstance.get("user/roles");
+    return res?.data.data ?? [];
+  } catch (error) {
+    return error;
+  }
+};
 export const fetchStoreData = async () => {
   try {
     const response = await axiosInstance.get(`stores`);
-    console.log(response?.data, "store data");
+    // console.log(response?.data, "store data");
     return response?.data ?? [];
   } catch (error) {
     console.error("Error fetching tenants data:", error);

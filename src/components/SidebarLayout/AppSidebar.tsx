@@ -5,13 +5,13 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { useRoleBasedNavigation } from "@/hooks/useRoleBasedNavigation";
+import { usePermissionBasedNavigation } from "@/hooks/usePermissionBasedNavigation";
 import LanguageSwitcher from "../Language/LanguageSwitcher";
 import ThemeSwitch from "../ThemeSwitcher";
 import { NavMain, SidebarFooterMenu, SidebarHead } from "./SidebarComponents";
 
 function AppSidebar() {
-  const navigation = useRoleBasedNavigation();
+  const navigation = usePermissionBasedNavigation();
 
   return (
     <Sidebar>
@@ -21,7 +21,7 @@ function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-        <NavMain items={navigation as any} />
+          <NavMain items={navigation} />
         </SidebarGroup>
       </SidebarContent>
 

@@ -1,4 +1,5 @@
 import RoleGuard from "@/components/RoleGuard";
+import { RouteGuard } from "@/components/RouterGuard";
 import AppSidebar from "@/components/SidebarLayout/AppSidebar";
 import {
   SidebarInset,
@@ -9,23 +10,26 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "POS Store | Management Dashboard",
-  description: "Powerful point-of-sale system for efficient inventory management and sales tracking",
-  keywords: "POS, point of sale, inventory management, sales tracking, store management",
+  description:
+    "Powerful point-of-sale system for efficient inventory management and sales tracking",
+  keywords:
+    "POS, point of sale, inventory management, sales tracking, store management",
   openGraph: {
     type: "website",
     url: "https://posstore-omega.vercel.app/dashboard",
     title: "POS Store | Management Dashboard",
-    description: "Powerful point-of-sale system for efficient inventory management and sales tracking",
+    description:
+      "Powerful point-of-sale system for efficient inventory management and sales tracking",
     siteName: "POS Store",
     images: [
       {
         url: "https://posstore-omega.vercel.app/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "POS Store Dashboard"
-      }
-    ]
-  }
+        alt: "POS Store Dashboard",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -47,13 +51,15 @@ export default function RootLayout({
       `}
     >
       <RoleGuard>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset className="p-4">
-            <SidebarTrigger />
-            {children}
-          </SidebarInset>
-        </SidebarProvider>
+        {/* <RouteGuard> */}
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="p-4">
+              <SidebarTrigger />
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
+        {/* </RouteGuard> */}
       </RoleGuard>
     </main>
   );

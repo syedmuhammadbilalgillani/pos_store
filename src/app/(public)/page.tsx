@@ -2,16 +2,17 @@
 
 import { fetchStoreData, Login } from "@/api/apiFuntions";
 import TranslatedText from "@/components/Language/TranslatedText";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { usePermissionStore } from "@/stores/permissionStore";
 import { useTenantStore } from "@/stores/tenantStore";
 import { useUserStore } from "@/stores/userStore";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 
 interface LoginFormSchema {
   email: string;
@@ -22,6 +23,7 @@ export default function LoginForm() {
   const [formData, setFormData] = useState<Partial<LoginFormSchema>>({});
   const [isLoading, setIsLoading] = useState(false);
   const setUser = useUserStore((state) => state.setUser);
+  const setPermissions = useUserStore((state) => state.setPermissions);
   const setTenant = useTenantStore((state) => state.setTenant);
   const router = useRouter();
 
@@ -32,23 +34,25 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-  
+
     try {
       const result = await Login(formData);
-  
+
       if (result.success) {
         // Set accessToken cookie
-        Cookies.set("accessToken", result.accessToken, {
+        console.log(result)
+        Cookies.set("accessToken", result?.data?.data?.accessToken, {
           secure: true,
           sameSite: "Strict",
         });
-  
-     
-        setUser(result.data.user);
-  
+
+        setUser(result?.data?.data?.user);
+        setPermissions(result?.data?.data?.user?.permissions);
+
         const data = await fetchStoreData();
+        
         setTenant(data[0]);
-  
+
         toast.success("Login Successful");
         router.push("/dashboard");
       } else {
@@ -60,15 +64,12 @@ export default function LoginForm() {
       }
     } catch (error: any) {
       toast.error(
-        `An unexpected error occurred. Please try again. ${
-          error.message || ""
-        }`
+        `An unexpected error occurred. Please try again. ${error.message || ""}`
       );
     } finally {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-black px-4">

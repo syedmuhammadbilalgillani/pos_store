@@ -205,7 +205,7 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
 
         {/* Table */}
         <section >
-           <div className="shadow rounded-xl dark:shadow-sidebar-accent">
+           <div className="shadow rounded-xl dark:shadow-sidebar-accent ">
             <Table>
               {renderTableHeader}
               <TableBody>{renderTableBody}</TableBody>

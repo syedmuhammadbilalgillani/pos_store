@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dialog";
 import UserExport from "@/components/UsersExport";
 import BackButton from "@/components/BackButton";
+import { PermissionGuard } from "@/components/PermissionGuard";
+import { PERMISSIONS } from "@/constant/permissions";
+import { usePermission } from "@/hooks/usePermission";
 
 // Custom debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -35,7 +38,7 @@ function useDebounce<T>(value: T, delay: number): T {
 const Users = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
+  const { hasPermission } = usePermission();
   const [queryParams, setQueryParams] = useState({
     search: "",
     role: "",
@@ -48,14 +51,22 @@ const Users = () => {
   });
 
   const debouncedParams = useDebounce(queryParams, 500);
+
+  // Create a condition variable
+  const shouldFetchUsers = hasPermission(PERMISSIONS.GET_ALL_USERS);
+
+  // Update the useFetchData call
   const { data, loading, refetch } = useFetchData(fetchUsers, {
     initialParams: debouncedParams,
-    enabled: false,
+    enabled: shouldFetchUsers,
   });
 
+  // Replace the manual useEffect with conditional logic if needed
   useEffect(() => {
-    refetch(debouncedParams);
-  }, [debouncedParams, refetch]);
+    if (shouldFetchUsers) {
+      refetch(debouncedParams);
+    }
+  }, [shouldFetchUsers, debouncedParams, refetch]);
 
   const updateParams = useCallback((updates: Partial<typeof queryParams>) => {
     setQueryParams((prev) => ({
@@ -125,56 +136,63 @@ const Users = () => {
             View, search, sort, and manage users in the system.
           </p>
         </header>
-        <div className="flex gap-2 my-4">
-          <Button onClick={() => router.push("/admin/users/create")}>
-            Add User
-          </Button>
-          <UserExport />
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Import Users</Button>
-            </DialogTrigger>
-            <DialogContent className="min-w-fit">
-              <DialogHeader>
-                <DialogTitle>Import Users via CSV</DialogTitle>
-              </DialogHeader>
-              <UserCsvUploader refetch={refetch} />
-            </DialogContent>
-          </Dialog>
+        <div className="flex flex-wrap gap-2 my-4">
+          <PermissionGuard permission={PERMISSIONS.CREATE_USER}>
+            <Button onClick={() => router.push("/admin/users/create")}>
+              Add User
+            </Button>
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.EXPORT_USERS}>
+            <UserExport />
+          </PermissionGuard>
+          <PermissionGuard permission={PERMISSIONS.IMPORT_USERS}>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>Import Users</Button>
+              </DialogTrigger>
+              <DialogContent className="min-w-fit">
+                <DialogHeader>
+                  <DialogTitle>Import Users via CSV</DialogTitle>
+                </DialogHeader>
+                <UserCsvUploader refetch={refetch} />
+              </DialogContent>
+            </Dialog>
+          </PermissionGuard>
           <BackButton />
-
         </div>
       </section>
 
       <section>
-        <ReusableTable
-          data={data?.users || []}
-          columns={usersTableColumn}
-          defaultSort={{
-            key: queryParams.sortBy,
-            direction: queryParams.sortOrder,
-          }}
-          actions={(row) => (
-            <div className="flex items-center justify-center gap-3">
-              <i
-                aria-label="Edit user"
-                className="cursor-pointer fa-duotone fa-pen-to-square text-gray-600 hover:text-gray-800 transition-colors duration-200 text-lg"
-                onClick={() => router.push(`/admin/users/${row._id}`)}
-              />
-              <i
-                aria-label="Delete user"
-                className="cursor-pointer fa-duotone fa-trash-can text-red-500 hover:text-red-700 transition-colors duration-200 text-lg"
-                onClick={() => deleteUserData(row._id)}
-              />
-            </div>
-          )}
-          onSort={handleSort}
-          onPageChange={handlePageChange}
-          onSearch={handleSearch}
-          currentPage={queryParams.page}
-          totalPages={data?.totalPages || 1}
-          isLoading={loading}
-        />
+        <PermissionGuard permission={PERMISSIONS.GET_ALL_USERS}>
+          <ReusableTable
+            data={data?.data?.users || []}
+            columns={usersTableColumn}
+            defaultSort={{
+              key: queryParams.sortBy,
+              direction: queryParams.sortOrder,
+            }}
+            actions={(row) => (
+              <div className="flex items-center justify-center gap-3">
+                <i
+                  aria-label="Edit user"
+                  className="cursor-pointer fa-duotone fa-pen-to-square text-gray-600 hover:text-gray-800 transition-colors duration-200 text-lg"
+                  onClick={() => router.push(`/admin/users/${row._id}`)}
+                />
+                <i
+                  aria-label="Delete user"
+                  className="cursor-pointer fa-duotone fa-trash-can text-red-500 hover:text-red-700 transition-colors duration-200 text-lg"
+                  onClick={() => deleteUserData(row._id)}
+                />
+              </div>
+            )}
+            onSort={handleSort}
+            onPageChange={handlePageChange}
+            onSearch={handleSearch}
+            currentPage={queryParams.page}
+            totalPages={data?.totalPages || 1}
+            isLoading={loading}
+          />
+        </PermissionGuard>
       </section>
     </main>
   );

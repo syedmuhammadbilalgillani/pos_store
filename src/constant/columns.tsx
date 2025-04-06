@@ -1,11 +1,9 @@
-
-
 export const usersTableColumn = [
   {
     key: "fullName",
     label: "user.table.fullName",
     sortable: true,
-    render: (row: any) => `${row.firstName} ${row.lastName}`,
+    render: (row: any) => `${row?.firstName} ${row?.lastName}`,
   },
   {
     key: "email",
@@ -21,31 +19,30 @@ export const usersTableColumn = [
     key: "role",
     label: "user.table.role",
     sortable: false,
-    render: (row: any) => row.role.charAt(0).toUpperCase() + row.role.slice(1),
+    render: (row: any) => row?.role ?? "",
   },
   {
     key: "isActive",
     label: "user.table.isActive",
     sortable: false,
-    render: (row: any) => (row.isActive ? "Active" : "Inactive"),
+    render: (row: any) => (row?.isActive ? "Active" : "Inactive"),
   },
   {
     key: "lastLogin",
     label: "user.table.lastLogin",
     sortable: true,
-    render: (row: any) => new Date(row.lastLogin).toLocaleString(),
+    render: (row: any) => new Date(row?.lastLogin).toLocaleString(),
   },
   {
     key: "permissions",
     label: "user.table.permissions",
     render: (row: any) =>
-      row.permissions
-        ? Object.entries(row.permissions).map(([key, value]) => (
+      row?.permissions
+        ? Object.entries(row?.permissions).map(([key, value]) => (
             <div key={key}>
               <strong>{key}:</strong> {String(value)}
             </div>
           ))
         : "N/A",
   },
- 
 ];

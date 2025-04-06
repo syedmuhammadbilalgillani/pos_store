@@ -164,10 +164,10 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
       const response = await axiosInstance.post("/user/import", {
         users: parsedUsers,
       });
-
+  
       console.log("Bulk upload success:", response.data);
-
-      // Display a summary toast with success/failure counts
+  
+      // Display a summary toast with success/skipped counts
       if (response.data.successful > 0) {
         await refetch();
         setIsLoading(false);
@@ -176,38 +176,39 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
           `Successfully added ${response.data.successful} of ${response.data.total} users`
         );
       }
-
-      // Display error messages for failed records
-      if (response.data.failed > 0) {
+  
+      // Display error messages for skipped records
+      if (response.data.skipped > 0) {
         setIsLoading(false);
         setParsedUsers([]);
-
-        // Group users by error message to avoid too many toasts
+  
+        // Group users by reason to avoid too many toasts
         const errorGroups: { [key: string]: string[] } = {};
-
+  
         response.data.errors.forEach(
-          (error: { email: string; error: string }) => {
-            if (!errorGroups[error.error]) {
-              errorGroups[error.error] = [];
+          (error: { email: string; phone: string; error: string; reason: string }) => {
+            const errorKey = error.reason || error.error;
+            if (!errorGroups[errorKey]) {
+              errorGroups[errorKey] = [];
             }
-            errorGroups[error.error].push(error.email);
+            errorGroups[errorKey].push(error.email);
           }
         );
-
+  
         // Display grouped error messages
         Object.entries(errorGroups).forEach(([errorMsg, emails]) => {
           const userList =
             emails.length > 3
               ? `${emails.slice(0, 3).join(", ")} and ${emails.length - 3} more`
               : emails.join(", ");
-
+  
           toast.error(`${errorMsg}: ${userList}`);
         });
       }
     } catch (err: any) {
       //   console.error("Bulk upload failed:", err);
       setIsLoading(false);
-
+  
       toast.error("Upload failed: " + (err.message || "Unknown error"));
     }
   };
@@ -245,6 +246,7 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
                 <TableCell>First Name</TableCell>
                 <TableCell>Last Name</TableCell>
                 <TableCell>Email</TableCell>
+                <TableCell>Password</TableCell>
                 <TableCell>Role</TableCell>
                 <TableCell>Active</TableCell>
               </TableRow>
@@ -256,6 +258,7 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
                   <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.lastName}</TableCell>
                   <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.passwordHash}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>{user.isActive ? "Yes" : "No"}</TableCell>
                 </TableRow>
