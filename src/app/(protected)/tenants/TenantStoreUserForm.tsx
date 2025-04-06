@@ -354,7 +354,7 @@ const TenantStoreUserForm: React.FC = () => {
     >
       <div className="flex justify-end sticky top-0 right-0">
         {/* Submit Button */}
-        <Button type="submit" isLoading={isLoading} disabled={isLoading}>
+        <Button type="submit" disabled={isLoading}>
           tenant.submit
         </Button>
       </div>
