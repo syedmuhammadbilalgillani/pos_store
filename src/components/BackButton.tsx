@@ -1,11 +1,11 @@
 import { useRouter } from "next/navigation";
 import React from "react";
-import Button from "./Button";
+import { Button } from "./ui/button";
 
 const BackButton = () => {
   const router = useRouter();
   return (
-    <Button ariaLabel="back button" onClick={() => router.back()}>
+    <Button aria-label="back button" variant={'outline'} onClick={() => router.back()}>
       back
     </Button>
   );

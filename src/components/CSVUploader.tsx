@@ -9,7 +9,7 @@ import {
 import Papa from "papaparse";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import Button from "./Button";
+import { Button } from "@/components/ui/button";
 import Spinner from "./Spinner";
 import { Input } from "./ui/input";
 

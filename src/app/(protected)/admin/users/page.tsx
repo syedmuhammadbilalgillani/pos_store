@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { deleteUser, fetchUsers } from "@/api/apiFuntions";
-import Button from "@/components/Button";
+import { Button } from "@/components/ui/button";
 import UserCsvUploader from "@/components/CSVUploader";
 import ReusableTable from "@/components/ReusableTable";
 import Spinner from "@/components/Spinner";
@@ -19,6 +19,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import UserExport from "@/components/UsersExport";
+import BackButton from "@/components/BackButton";
 
 // Custom debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -107,7 +109,10 @@ const Users = () => {
       {/* SEO Metadata */}
       <Head>
         <title>User Management | Admin Dashboard</title>
-        <meta name="description" content="Manage users, import CSV, and perform CRUD actions in the admin panel." />
+        <meta
+          name="description"
+          content="Manage users, import CSV, and perform CRUD actions in the admin panel."
+        />
         <meta name="robots" content="index, follow" />
       </Head>
 
@@ -124,8 +129,7 @@ const Users = () => {
           <Button onClick={() => router.push("/admin/users/create")}>
             Add User
           </Button>
-          <Button onClick={() => router.back()}>Back</Button>
-
+          <UserExport />
           <Dialog>
             <DialogTrigger asChild>
               <Button>Import Users</Button>
@@ -137,6 +141,8 @@ const Users = () => {
               <UserCsvUploader refetch={refetch} />
             </DialogContent>
           </Dialog>
+          <BackButton />
+
         </div>
       </section>
 
@@ -149,15 +155,15 @@ const Users = () => {
             direction: queryParams.sortOrder,
           }}
           actions={(row) => (
-            <div className="flex gap-2 justify-center">
+            <div className="flex items-center justify-center gap-3">
               <i
                 aria-label="Edit user"
-                className="cursor-pointer fa fa-pencil text-purple-500"
+                className="cursor-pointer fa-duotone fa-pen-to-square text-gray-600 hover:text-gray-800 transition-colors duration-200 text-lg"
                 onClick={() => router.push(`/admin/users/${row._id}`)}
               />
               <i
                 aria-label="Delete user"
-                className="cursor-pointer fa fa-trash text-red-500"
+                className="cursor-pointer fa-duotone fa-trash-can text-red-500 hover:text-red-700 transition-colors duration-200 text-lg"
                 onClick={() => deleteUserData(row._id)}
               />
             </div>

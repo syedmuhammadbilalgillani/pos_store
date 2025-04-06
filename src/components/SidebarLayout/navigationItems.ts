@@ -99,26 +99,26 @@ export const navigation = [
           icon: Home,
           isActive: true,
         },
-        {
-          title: "Settings",
-          url: "/settings",
-          icon: Settings,
-          items: [
-            { title: "General", url: "/settings/general" },
-            { title: "Profile", url: "/settings/profile" },
-          ],
-        },
+        // {
+        //   title: "Settings",
+        //   url: "/settings",
+        //   icon: Settings,
+        //   items: [
+        //     { title: "General", url: "/settings/general" },
+        //     { title: "Profile", url: "/settings/profile" },
+        //   ],
+        // },
       ],
     },
-    {
-      label: "Management",
-      items: [
-        {
-          title: "Users",
-          url: "/users",
-          icon: Users,
-        },
-      ],
-    },
+    // {
+    //   label: "Management",
+    //   items: [
+    //     {
+    //       title: "Users",
+    //       url: "/users",
+    //       icon: Users,
+    //     },
+    //   ],
+    // },
   ],
 ];

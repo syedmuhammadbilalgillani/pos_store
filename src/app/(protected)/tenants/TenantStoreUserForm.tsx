@@ -1,6 +1,6 @@
 "use client";
 import axiosInstance from "@/api";
-import Button from "@/components/Button";
+import { Button } from "@/components/ui/button";
 import Input from "@/components/Input"; // Your reusable Input component
 import TranslatedText from "@/components/Language/TranslatedText";
 import { toast } from "sonner";

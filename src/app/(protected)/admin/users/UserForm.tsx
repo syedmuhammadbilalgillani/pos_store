@@ -1,7 +1,7 @@
 "use client";
 import axiosInstance from "@/api";
 import BackButton from "@/components/BackButton";
-import Button from "@/components/Button";
+import { Button } from "@/components/ui/button";
 import Input from "@/components/Input";
 import TranslatedText from "@/components/Language/TranslatedText";
 import Spinner from "@/components/Spinner";
@@ -138,7 +138,6 @@ const UserForm: React.FC<UserFormProps> = ({
         const fieldsToRemove = [
           "passwordHash",
           "isActive",
-          "permissions",
           "_id",
           "lastLogin",
           "createdAt",
@@ -265,7 +264,7 @@ const UserForm: React.FC<UserFormProps> = ({
         className="p-4 space-y-6 bg-white dark:bg-[#171717] rounded-md text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
       >
         <div className="flex justify-end sticky gap-2 top-0 right-0">
-          <Button type="submit" isLoading={isLoading} disabled={isLoading}>
+          <Button type="submit"  disabled={isLoading}>
             submit
           </Button>
           <BackButton />
