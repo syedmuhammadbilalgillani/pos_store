@@ -97,7 +97,7 @@ const UserExport = () => {
         <Spinner isLoading={loading} />
 
         <div className="space-y-4">
-          <div>
+          <div className="space-y-2" >
             <Label htmlFor="format">Select Export Format</Label>
             <Select value={format} onValueChange={setFormat} disabled={loading}>
               <SelectTrigger id="format" aria-label="Export Format">
@@ -110,7 +110,7 @@ const UserExport = () => {
                 <SelectItem value="json">JSON</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div >
 
           <Button
             onClick={handleExport}

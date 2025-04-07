@@ -168,24 +168,24 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
       console.log("Bulk upload success:", response.data);
   
       // Display a summary toast with success/skipped counts
-      if (response.data.successful > 0) {
+      if (response?.data?.data?.successful > 0) {
         await refetch();
         setIsLoading(false);
         setParsedUsers([]);
         toast.success(
-          `Successfully added ${response.data.successful} of ${response.data.total} users`
+          `Successfully added ${response.data.data.successful} of ${response.data.total} users`
         );
       }
   
       // Display error messages for skipped records
-      if (response.data.skipped > 0) {
+      if (response.data.data.skipped > 0) {
         setIsLoading(false);
         setParsedUsers([]);
   
         // Group users by reason to avoid too many toasts
         const errorGroups: { [key: string]: string[] } = {};
   
-        response.data.errors.forEach(
+        response.data.data.errors.forEach(
           (error: { email: string; phone: string; error: string; reason: string }) => {
             const errorKey = error.reason || error.error;
             if (!errorGroups[errorKey]) {

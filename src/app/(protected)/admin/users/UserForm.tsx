@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Input from "@/components/Input";
 import TranslatedText from "@/components/Language/TranslatedText";
 import Spinner from "@/components/Spinner";
-import { UserRole } from "@/constant/types";
+import { FormField, UserRole } from "@/constant/types";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -13,6 +13,14 @@ import { useFetchData } from "@/hooks/useFetchData";
 import { fetchRoles } from "@/api/apiFuntions";
 import { usePermission } from "@/hooks/usePermission";
 import { PERMISSIONS } from "@/constant/permissions";
+import { FormInput } from "@/components/FormInput";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface UserFormProps {
   initialData?: Partial<typeof defaultFormData> | any;
@@ -25,9 +33,9 @@ const defaultFormData = {
   email: "",
   passwordHash: "",
   phone: "",
-  roleId: "",
+  role: "",
   isActive: true,
-  permissions: {},
+  permissions: [],
 };
 
 const UserForm: React.FC<UserFormProps> = ({
@@ -50,13 +58,41 @@ const UserForm: React.FC<UserFormProps> = ({
     enabled: shouldFetchUsers,
   });
 
+  // Convert PERMISSIONS object to array of options for the select component
+  const permissionOptions = Object.entries(PERMISSIONS).map(([key, value]) => ({
+    label: key,
+    value: value,
+  }));
+
   useEffect(() => {
     if (initialData) {
-      setFormData({ ...defaultFormData, ...initialData });
-    }
-  }, [initialData]);
+      console.log(initialData, "initial data");
+      let role = initialData.role || initialData.role || "";
+      setFormData({ ...defaultFormData, ...initialData, role });
 
-  const formFields: any = [
+      // Initialize permissions if editing
+      if (mode === "edit" && initialData.permissions) {
+        // Handle both array and object formats for permissions
+        let formattedPermissions = [];
+
+        if (Array.isArray(initialData.permissions)) {
+          formattedPermissions = initialData.permissions.map(
+            (permission: any, index: any) => ({
+              key: permission._id || permission.id || index.toString(),
+              value: permission.name || permission.value || permission,
+            })
+          );
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          permissions: formattedPermissions,
+        }));
+      }
+    }
+  }, [initialData, mode]);
+
+  const formFields: any[] = [
     {
       id: "firstName",
       label: "user.form.firstName",
@@ -69,16 +105,33 @@ const UserForm: React.FC<UserFormProps> = ({
       type: "text",
       required: true,
     },
-    { id: "email", label: "user.form.email", type: "email", required: true },
-    { id: "phone", label: "user.form.phone", type: "tel", required: true },
     {
-      id: "roleId",
-      label: "user.form.role",
-      type: "select",
-      options: roles ?? [],
+      id: "email",
+      label: "user.form.email",
+      type: "email",
       required: true,
     },
-    { id: "isActive", label: "user.form.isActive", type: "checkbox" },
+    {
+      id: "phone",
+      label: "user.form.phone",
+      type: "tel",
+      required: true,
+    },
+    {
+      id: "role",
+      label: "user.form.role",
+      type: "select",
+      required: true,
+      options: roles?.map((role: any) => ({
+        label: role?.name ?? "",
+        value: role?._id ?? "",
+      })),
+    },
+    {
+      id: "isActive",
+      label: "user.form.isActive",
+      type: "checkbox",
+    },
     ...(mode === "create"
       ? [
           {
@@ -91,38 +144,27 @@ const UserForm: React.FC<UserFormProps> = ({
       : []),
   ];
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { id, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-
-    if (id === "phone") {
-      let formattedPhone = value.replace(/[^\d+]/g, "");
-      if (formattedPhone && !formattedPhone.startsWith("+")) {
-        formattedPhone = "+" + formattedPhone;
-      }
-      setFormData((prev) => ({ ...prev, [id]: formattedPhone }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [id]: type === "checkbox" ? checked : value,
-      }));
-    }
-  };
   const handleAddSetting = () => {
-    if (!newSetting.key || !newSetting.value || !newSetting.target) return;
+    if (!newSetting.value || !newSetting.target) return;
 
-    setFormData((prev: any) => ({
-      ...prev,
-      [newSetting.target]: {
-        ...(prev[newSetting.target as keyof any] as Record<string, any>),
-        [newSetting.key]: newSetting.value,
-      },
-    }));
+    setFormData((prev: any) => {
+      const current = prev[newSetting.target] ?? [];
+      if (!Array.isArray(current)) return prev;
+
+      // Auto-generate key as the index
+      const newKey = current.length.toString();
+
+      return {
+        ...prev,
+        [newSetting.target]: [
+          ...current,
+          { key: newKey, value: newSetting.value }, // Add key as index and value
+        ],
+      };
+    });
 
     setNewSetting({
-      key: "",
+      key: "", // Empty key as it's auto-generated
       value: "",
       target: newSetting.target,
     });
@@ -130,30 +172,58 @@ const UserForm: React.FC<UserFormProps> = ({
 
   const handleRemoveSetting = (prefix: string, key: string) => {
     setFormData((prev: any) => {
-      const currentSettings = {
-        ...(prev[prefix as keyof any] as Record<string, any>),
+      const current = prev[prefix] ?? [];
+      if (!Array.isArray(current)) return prev;
+
+      return {
+        ...prev,
+        [prefix]: current.filter((item: any) => item.key !== key), // Remove by key
       };
-      delete currentSettings[key];
-      return { ...prev, [prefix]: currentSettings };
     });
   };
+
+  const handleAddPermission = (permission: string) => {
+    if (!permission) return;
+
+    setFormData((prev: any) => {
+      const currentPermissions = prev.permissions || [];
+
+      // Check if permission already exists
+      if (currentPermissions.some((p: any) => p.value === permission)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        permissions: [
+          ...currentPermissions,
+          { key: currentPermissions.length.toString(), value: permission },
+        ],
+      };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const payload = { ...formData } as Record<string, any>;
+      const payload = { ...formData } as any;
+
+      // Ensure permissions is an array of values before submitting
+      if (payload.permissions && Array.isArray(payload.permissions)) {
+        payload.permissions = payload.permissions.map(
+          (setting: any) => setting.value
+        );
+      }
 
       if (mode === "edit") {
-        // Remove unwanted properties
         const fieldsToRemove = [
           "passwordHash",
-          "isActive",
           "_id",
           "lastLogin",
           "createdAt",
           "updatedAt",
-          "role",
           "customPermissions",
           "__v",
         ];
@@ -190,24 +260,27 @@ const UserForm: React.FC<UserFormProps> = ({
     }
   };
 
-  const renderSettings = (settings: Record<string, any>, prefix: string) => {
+  const renderSettings = (settings: any, prefix: string) => {
+    const settingsArray = Array.isArray(settings) ? settings : [];
+
     return (
       <div className="space-y-3">
-        {Object.entries(settings).map(([key, value]) => (
+        {settingsArray.map(({ key, value }: { key: string; value: string }) => (
           <div key={`${prefix}_${key}`} className="flex items-center space-x-2">
-            {/* <div>{key}</div> */}
             <Input
               id={`${prefix}_${key}`}
-              // label={key}
               type="text"
               value={value}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  [prefix]: {
-                    ...(prev[prefix as keyof typeof prev] || {}),
-                    [key]: e.target.value,
-                  },
+                  [prefix]: prev
+                    ? [prefix].map((item: any) =>
+                        item.key === key
+                          ? { ...item, value: e.target.value }
+                          : item
+                      )
+                    : "",
                 }))
               }
               className="flex-grow"
@@ -215,7 +288,7 @@ const UserForm: React.FC<UserFormProps> = ({
             <button
               type="button"
               onClick={() => handleRemoveSetting(prefix, key)}
-              className=" p-2 text-red-500 hover:text-red-700"
+              className="p-2 text-red-500 hover:text-red-700"
             >
               <i
                 aria-label="Delete user"
@@ -229,19 +302,6 @@ const UserForm: React.FC<UserFormProps> = ({
             <TranslatedText textKey="user.form.addSetting" />
           </h4>
           <div className="flex items-end space-x-2">
-            <Input
-              label="key"
-              type="text"
-              value={newSetting.target === prefix ? newSetting.key : ""}
-              onChange={(e) =>
-                setNewSetting({
-                  ...newSetting,
-                  key: e.target.value,
-                  target: prefix,
-                })
-              }
-              className="flex-grow"
-            />
             <Input
               label="value"
               type="text"
@@ -258,11 +318,7 @@ const UserForm: React.FC<UserFormProps> = ({
             <button
               type="button"
               onClick={handleAddSetting}
-              disabled={
-                !newSetting.key ||
-                !newSetting.value ||
-                newSetting.target !== prefix
-              }
+              disabled={!newSetting.value || newSetting.target !== prefix}
               className="mb-4 px-4 py-2 bg-green-500 text-white dark:text-black rounded hover:bg-green-600 disabled:bg-gray-300"
             >
               <TranslatedText textKey="add" />
@@ -272,89 +328,100 @@ const UserForm: React.FC<UserFormProps> = ({
       </div>
     );
   };
+
+  const renderPermissions = () => {
+    const permissions = Array.isArray(formData.permissions)
+      ? formData.permissions
+      : [];
+
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4">
+          {permissions.map(({ key, value }: { key: string; value: string }) => (
+            <div
+              key={`permissions_${key}`}
+              className="flex items-center space-x-2"
+            >
+              <div className="flex-grow p-2 border rounded">
+                {Object.entries(PERMISSIONS).find(
+                  ([_, permValue]) => permValue === value
+                )?.[0] || value}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleRemoveSetting("permissions", key)}
+                className="p-2 text-red-500 hover:text-red-700"
+              >
+                <i
+                  aria-label="Remove permission"
+                  className="cursor-pointer fa-duotone fa-trash-can text-red-500 hover:text-red-700 transition-colors duration-200 text-lg"
+                />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 p-3 border border-dashed border-gray-300 rounded-md">
+          <h4 className="text-sm font-medium mb-2">
+            <TranslatedText textKey="user.form.addPermission" />
+          </h4>
+          <div className="flex items-end space-x-2">
+            <div className="flex-grow">
+              <Select onValueChange={handleAddPermission}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select permission" />
+                </SelectTrigger>
+                <SelectContent>
+                  {permissionOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   console.log(roles, "roles");
   return (
     <>
-      <Spinner isLoading={isLoading || loading}></Spinner>
+      <Spinner isLoading={isLoading} />
+      <div className="flex justify-end gap-2 mb-4 ">
+        <Button type="submit" disabled={isLoading} onClick={handleSubmit}>
+          submit
+        </Button>
+        <BackButton />
+      </div>
       <form
         onSubmit={handleSubmit}
         className="p-4 space-y-6 bg-white dark:bg-[#171717] rounded-md text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
       >
-        <div className="flex justify-end sticky gap-2 top-0 right-0">
-          <Button type="submit" disabled={isLoading}>
-            submit
-          </Button>
-          <BackButton />
-        </div>
-
         <section aria-labelledby="user-heading">
           <h2 id="user-heading" className="text-xl font-bold mb-4">
             <TranslatedText textKey="tenant.userInfo" />
           </h2>
           <div className="border-b pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {formFields
-              .filter((field: any) => field.id !== "permissions")
-              .map((field: any) =>
-                field.type === "select" ? (
-                  <div key={field.id} className="mb-4">
-                    <label
-                      htmlFor={field.id}
-                      className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      <TranslatedText textKey={field.label} />
-                      {field.required && (
-                        <span className="text-red-500"> *</span>
-                      )}
-                    </label>
-                    <select
-                      id={field.id}
-                      value={
-                        formData[field.id as keyof typeof formData] as string
-                      }
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
-                    >
-                      <option value="">Select Role</option>
-                      {field?.options?.map((option: any) => (
-                        <option key={option._id} value={option?._id}>
-                          {option?.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ) : (
-                  <Input
-                    key={field.id}
-                    id={field.id}
-                    label={field.label}
-                    type={field.type as any}
-                    value={
-                      field.type === "checkbox"
-                        ? undefined
-                        : (formData[
-                            field.id as keyof typeof formData
-                          ] as string) || ""
-                    }
-                    checked={
-                      field.type === "checkbox"
-                        ? (formData[
-                            field.id as keyof typeof formData
-                          ] as boolean)
-                        : undefined
-                    }
-                    onChange={handleChange}
-                    required={field.required}
-                    placeholder={
-                      field.id === "phone" ? "+11234567890" : undefined
-                    }
-                  />
-                )
-              )}
+            {formFields.map((field: any) => (
+              <FormInput
+                key={field.id}
+                field={field}
+                value={formData[field.id as keyof typeof formData] as string}
+                onChange={(id, value) =>
+                  setFormData((prev) => ({ ...prev, [id]: value }))
+                }
+              />
+            ))}
+
+            {/* Permissions section with select dropdown */}
             <div className="col-span-full">
               <h3 className="text-lg font-semibold mt-4">
                 <TranslatedText textKey="user.form.permissions" />
               </h3>
-              {renderSettings(formData.permissions, "permissions")}
+              {renderPermissions()}
             </div>
           </div>
         </section>

@@ -33,16 +33,16 @@ export const usersTableColumn = [
     sortable: true,
     render: (row: any) => new Date(row?.lastLogin).toLocaleString(),
   },
-  {
-    key: "permissions",
-    label: "user.table.permissions",
-    render: (row: any) =>
-      row?.permissions
-        ? Object.entries(row?.permissions).map(([key, value]) => (
-            <div key={key}>
-              <strong>{key}:</strong> {String(value)}
-            </div>
-          ))
-        : "N/A",
-  },
+  // {
+  //   key: "permissions",
+  //   label: "user.table.permissions",
+  //   render: (row: any) =>
+  //     row?.permissions
+  //       ? Object.entries(row?.permissions).map(([key, value]) => (
+  //           <div key={key}>
+  //             <strong>{key}:</strong> {String(value)}
+  //           </div>
+  //         ))
+  //       : "N/A",
+  // },
 ];

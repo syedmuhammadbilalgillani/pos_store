@@ -8,7 +8,7 @@ import { ChevronUp, User2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 import TranslatedText from "../Language/TranslatedText";
+import Spinner from "../Spinner";
 
 export const SidebarHead = () => {
   const tenant = useTenantStore((state) => state.tenant) as Tenant | null;
@@ -169,8 +170,11 @@ export const SidebarFooterMenu = () => {
   const user = useUserStore((state) => state.user) as User | null;
   const clearTenant = useTenantStore((state) => state.clearTenant);
   const clearUser = useUserStore((state) => state.clearUser);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleLogout = useCallback(async () => {
     try {
+      setIsLoading(true);
       const res = await Logout();
       toast.success(res.message);
       clearTenant();
@@ -181,38 +185,45 @@ export const SidebarFooterMenu = () => {
 
       router.push("/");
       localStorage.clear();
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 200);
     } catch (error: unknown) {
+      setIsLoading(false);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error during logout ${errorMessage}`);
-      // console.error("Error during logout:", errorMessage);
     }
   }, [router, clearUser, clearTenant]);
+
   return (
-    <SidebarFooter>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton className="text-nowrap">
-                <User2 /> {user?.firstName ?? ""} {user?.lastName ?? ""}
-                <ChevronUp className="ml-auto" />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="top"
-              className="w-[--radix-popper-anchor-width]"
-            >
-              {/* <DropdownMenuItem></DropdownMenuItem>
+    <>
+      <Spinner isLoading={isLoading} />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="text-nowrap">
+                  <User2 /> {user?.firstName ?? ""} {user?.lastName ?? ""}
+                  <ChevronUp className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                className="w-[--radix-popper-anchor-width]"
+              >
+                {/* <DropdownMenuItem></DropdownMenuItem>
                 <DropdownMenuItem>Billing</DropdownMenuItem> */}
-              <DropdownMenuItem onClick={handleLogout}>
-                Sign out
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem></DropdownMenuItem> */}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarFooter>
+                <DropdownMenuItem onClick={handleLogout}>
+                  Sign out
+                </DropdownMenuItem>
+                {/* <DropdownMenuItem></DropdownMenuItem> */}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </>
   );
 };

@@ -46,7 +46,7 @@ const Users = () => {
     storeId: "",
     page: 1,
     limit: 10,
-    sortBy: "fullName",
+    sortBy: "createdAt",
     sortOrder: "desc" as "asc" | "desc",
   });
 
@@ -189,7 +189,7 @@ const Users = () => {
             onPageChange={handlePageChange}
             onSearch={handleSearch}
             currentPage={queryParams.page}
-            totalPages={data?.totalPages || 1}
+            totalPages={data?.data?.totalPages || 1}
             isLoading={loading}
           />
         </PermissionGuard>
