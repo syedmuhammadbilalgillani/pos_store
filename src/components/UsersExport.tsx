@@ -1,9 +1,11 @@
 "use client";
 
 import axiosInstance from "@/api";
-import { Loader2 } from "lucide-react";
 import Papa from "papaparse";
 import { useState } from "react";
+import { toast } from "sonner";
+import Spinner from "./Spinner";
+import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -19,9 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Button } from "./ui/button";
-import Spinner from "./Spinner";
-import { toast } from "sonner";
 
 const UserExport = () => {
   const [loading, setLoading] = useState(false);

@@ -129,7 +129,7 @@ export const fetchUsers = async (params?: {
     const res = await axiosInstance.get(`/user?${query.toString()}`);
     return res?.data; // Return the complete response object
   } catch (error) {
-    // console.error("Error fetching users:", error);
+    console.error("Error fetching users:", error);
     return { users: [], total: 0, page: 1, limit: 10, totalPages: 1 };
   }
 };

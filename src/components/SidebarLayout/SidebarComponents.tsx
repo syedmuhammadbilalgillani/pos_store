@@ -44,7 +44,7 @@ import { PERMISSIONS } from "@/constant/permissions";
 
 export const SidebarHead = () => {
   const tenant = useTenantStore((state) => state.tenant) as Tenant | null;
-  const user = useUserStore((state) => state.user) as User | null;
+  // const user = useUserStore((state) => state.user) as User | null;
   const router = useRouter();
   const { hasPermission } = usePermission();
   const isStoreEdit = hasPermission(PERMISSIONS.UPDATE_STORE  );

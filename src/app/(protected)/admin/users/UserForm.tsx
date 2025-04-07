@@ -1,27 +1,19 @@
 "use client";
 import axiosInstance from "@/api";
+import { fetchRoles } from "@/api/apiFuntions";
 import BackButton from "@/components/BackButton";
-import { Button } from "@/components/ui/button";
-import Input from "@/components/Input";
+import { FormInput } from "@/components/FormInput";
 import TranslatedText from "@/components/Language/TranslatedText";
 import Spinner from "@/components/Spinner";
-import { FormField, UserRole } from "@/constant/types";
-import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { fetchRoles } from "@/api/apiFuntions";
-import { usePermission } from "@/hooks/usePermission";
-import { PERMISSIONS } from "@/constant/permissions";
-import { FormInput } from "@/components/FormInput";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useUserStore } from "@/stores/userStore";
+import { Button } from "@/components/ui/button";
 import { MultiSelect } from "@/components/ui/MultiSelect";
+import { PERMISSIONS } from "@/constant/permissions";
+import { UserRole } from "@/constant/types";
+import { usePermission } from "@/hooks/usePermission";
+import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface UserFormProps {
   initialData?: Partial<typeof defaultFormData> | any;
@@ -64,10 +56,9 @@ const UserForm: React.FC<UserFormProps> = ({
       setIsRolesLoading(true);
       try {
         const response = await fetchRoles();
-        console.log(response, "role res");
         setRoles(response); // Assuming response.data is an array of roles
-      } catch (error) {
-        toast.error("Failed to fetch roles.");
+      } catch (error: unknown) {
+        toast.error(`Failed to fetch roles. ${error}`);
       } finally {
         setIsRolesLoading(false);
       }
@@ -87,14 +78,14 @@ const UserForm: React.FC<UserFormProps> = ({
   useEffect(() => {
     if (initialData) {
       console.log(initialData, "initial data");
-      let role = initialData.role || initialData.role || "";
+      const role = initialData.role || initialData.role || "";
       setFormData({ ...defaultFormData, ...initialData, role });
 
       // Initialize permissions if editing
       if (mode === "edit" && initialData.permissions) {
         // Handle both array and object formats for permissions
         let formattedPermissions = [];
-        let permissionValues: string[] = [];
+        const permissionValues: string[] = [];
 
         if (Array.isArray(initialData.permissions)) {
           formattedPermissions = initialData.permissions.map(
@@ -265,7 +256,7 @@ const UserForm: React.FC<UserFormProps> = ({
       ? formData.permissions
       : [];
 
-      // Filter out permissions already available in user permissions in edit mode
+    // Filter out permissions already available in user permissions in edit mode
     // const availablePermissions = permissionOptions.filter(
     //   (option) =>
     //     !permissions.some((p: any) => p.value === option.value)
@@ -280,7 +271,7 @@ const UserForm: React.FC<UserFormProps> = ({
           placeholder="Select permissions"
           className="w-fit"
         />
-        <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1 gap-4">
+        <div className="grid lg:pgrid-cols-4 md:grid-cols-3 sm:grid-cols-1 gap-4">
           {permissions.map(({ key, value }: { key: string; value: string }) => (
             <div
               key={`permissions_${key}`}
@@ -288,7 +279,7 @@ const UserForm: React.FC<UserFormProps> = ({
             >
               <div className="flex-grow p-2 border rounded">
                 {Object.entries(PERMISSIONS).find(
-                  ([_, permValue]) => permValue === value
+                  ([permValue]) => permValue === value
                 )?.[0] || value}
               </div>
               <button

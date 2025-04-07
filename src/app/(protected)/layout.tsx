@@ -1,5 +1,3 @@
-import RoleGuard from "@/components/RoleGuard";
-import { RouteGuard } from "@/components/RouterGuard";
 import AppSidebar from "@/components/SidebarLayout/AppSidebar";
 import {
   SidebarInset,
@@ -50,8 +48,6 @@ export default function RootLayout({
       dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
       `}
     >
-      <RoleGuard>
-        {/* <RouteGuard> */}
           <SidebarProvider>
             <AppSidebar />
             <SidebarInset className="p-4">
@@ -59,8 +55,7 @@ export default function RootLayout({
               {children}
             </SidebarInset>
           </SidebarProvider>
-        {/* </RouteGuard> */}
-      </RoleGuard>
+    
     </main>
   );
 }
