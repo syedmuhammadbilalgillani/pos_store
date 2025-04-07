@@ -39,12 +39,15 @@ import {
 import { toast } from "sonner";
 import TranslatedText from "../Language/TranslatedText";
 import Spinner from "../Spinner";
+import { usePermission } from "@/hooks/usePermission";
+import { PERMISSIONS } from "@/constant/permissions";
 
 export const SidebarHead = () => {
   const tenant = useTenantStore((state) => state.tenant) as Tenant | null;
   const user = useUserStore((state) => state.user) as User | null;
   const router = useRouter();
-  // Use useMemo for the company logo to avoid re-renders
+  const { hasPermission } = usePermission();
+  const isStoreEdit = hasPermission(PERMISSIONS.UPDATE_STORE  );
   const companyLogo = useMemo(
     () => (
       <Image
@@ -67,7 +70,7 @@ export const SidebarHead = () => {
     <div className="flex flex-col items-center justify-center py-4 px-2 rounded-lg transition-colors duration-200 cursor-pointer group">
       <div className="relative mb-2">
         {companyLogo}
-        {user?.role === "admin" && (
+        {isStoreEdit && (
           <div
             onClick={() => router.push("/admin/store/edit")}
             className="absolute -bottom-1 -right-1 bg-gray-100 dark:bg-gray-700 p-0.5 px-2 rounded-full shadow-sm border border-gray-200 dark:border-gray-600 group-amber-500 dark:group-amber-500 transition-colors duration-200"

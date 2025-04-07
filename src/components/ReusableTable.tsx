@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import TranslatedText from "./Language/TranslatedText";
 import Spinner from "./Spinner";
 import { Input } from "./ui/input";
-
+import { Button as PaginationBtn } from "./ui/button";
 interface Column {
   key: string;
   label: React.ReactNode;
@@ -38,7 +38,6 @@ interface ReusableTableProps {
   pageSize?: number;
   actions?: (row: any) => React.ReactNode;
 }
-
 
 const ReusableTable: React.FC<ReusableTableProps> = React.memo(
   ({
@@ -116,7 +115,7 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
     const renderTableHeader = useMemo(
       () => (
         <TableHeader className="bg-sidebar ">
-          <TableRow >
+          <TableRow>
             <TableHead className="rounded-tl-lg">#</TableHead>
             {columns.map((column, index) => (
               <TableHead
@@ -125,7 +124,7 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
                   column.sortable ? () => handleSort(column.key) : undefined
                 }
                 className={`${
-                  column.sortable ? "cursor-pointer select-none" : "" 
+                  column.sortable ? "cursor-pointer select-none" : ""
                 }`}
               >
                 <div className="flex items-center gap-1">
@@ -171,7 +170,7 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
       }
 
       return data.map((row, rowIndex) => (
-        <TableRow  key={rowIndex}>
+        <TableRow key={rowIndex}>
           <TableCell>{rowIndex + 1 + (currentPage - 1) * pageSize}</TableCell>
           {columns.map((column) => (
             <TableCell key={column.key}>
@@ -204,8 +203,8 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
         </div>
 
         {/* Table */}
-        <section >
-           <div className="shadow rounded-xl dark:shadow-sidebar-accent ">
+        <section>
+          <div className="shadow rounded-xl dark:shadow-sidebar-accent ">
             <Table>
               {renderTableHeader}
               <TableBody>{renderTableBody}</TableBody>
@@ -214,27 +213,29 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
 
           {/* Pagination */}
           <div className="mt-6 flex justify-between items-center">
-            <button
+            <PaginationBtn
+              variant={"secondary"}
+              size={"sm"}
               onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
               disabled={currentPage === 1 || isLoading}
-              className="px-5 py-2.5 rounded border bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <TranslatedText textKey="previous" />
-            </button>
+            </PaginationBtn>
 
             <span className="text-gray-700 dark:text-gray-300">
               Page {currentPage} of {totalPages}
             </span>
 
-            <button
+            <PaginationBtn
+              variant={"secondary"}
+              size={"sm"}
               onClick={() =>
                 currentPage < totalPages && onPageChange(currentPage + 1)
               }
               disabled={currentPage === totalPages || isLoading}
-              className="px-5 py-2.5 rounded border bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <TranslatedText textKey="next" />
-            </button>
+            </PaginationBtn>
           </div>
         </section>
       </div>

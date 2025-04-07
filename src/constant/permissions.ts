@@ -8,7 +8,8 @@ export const PERMISSIONS = {
     DELETE_USER: 'delete_user',
     IMPORT_USERS: 'import_users',
     EXPORT_USERS: 'export_users',
-    
+    // Store Management
+    UPDATE_STORE:'update_store',
     // Product management
     MANAGE_PRODUCTS: 'manage_products',
     

@@ -1,8 +1,12 @@
 "use client";
 import { fetchStoreData, updateStoreData } from "@/api/apiFuntions";
 import Input from "@/components/Input";
+import NotAllowed from "@/components/NotAllowed";
+import { PermissionGuard } from "@/components/PermissionGuard";
 import Spinner from "@/components/Spinner";
+import { PERMISSIONS } from "@/constant/permissions";
 import { TenantFormData } from "@/constant/types";
+import { usePermission } from "@/hooks/usePermission";
 import { useTenantStore } from "@/stores/tenantStore";
 import Image from "next/image";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -25,6 +29,7 @@ const EditStore = React.memo(() => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const setTenant = useTenantStore((state) => state.setTenant);
   const [isLoading, setIsLoading] = useState(false);
+  const { hasPermission } = usePermission();
   // Use useMemo for inputFields to prevent recreating on each render
   const inputFields = useMemo(
     () => [
@@ -167,62 +172,67 @@ const EditStore = React.memo(() => {
     ),
     [previewUrl, tenant?.logoUrl, tenant?.name]
   );
+  const isAccess = hasPermission(PERMISSIONS.UPDATE_STORE);
+  if (!isAccess) {
+    return <NotAllowed />;
+  } else
+    return (
+      <>
+        <Spinner isLoading={isLoading} />
+        <PermissionGuard permission={PERMISSIONS.UPDATE_STORE}>
+          <form onSubmit={handleSubmit} className="space-y-4 parent">
+            {/* Logo Upload Section */}
+            <div className="flex flex-col items-center mb-6">
+              {logoPreview}
+              <div className="flex flex-col items-center">
+                <label className="cursor-pointer bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                  Upload New Logo
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    aria-label="Upload logo image"
+                  />
+                </label>
+                <span className="text-sm text-gray-500 mt-2">
+                  Recommended: 100x100px, Max 5MB
+                </span>
+              </div>
+            </div>
 
-  return (
-    <>
-      <Spinner isLoading={isLoading} />
-      <form onSubmit={handleSubmit} className="space-y-4 parent">
-        {/* Logo Upload Section */}
-        <div className="flex flex-col items-center mb-6">
-          {logoPreview}
-          <div className="flex flex-col items-center">
-            <label className="cursor-pointer bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
-              Upload New Logo
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileChange}
-                aria-label="Upload logo image"
-              />
-            </label>
-            <span className="text-sm text-gray-500 mt-2">
-              Recommended: 100x100px, Max 5MB
-            </span>
-          </div>
-        </div>
+            {/* Other Form Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              {inputFields.map((field) => (
+                <Input
+                  key={field.name}
+                  label={field.label}
+                  type={field.type as any}
+                  name={field.name}
+                  value={formData[field.name as keyof TenantFormData]}
+                  onChange={handleInputChange}
+                  required={field.required}
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
+                  className="w-full"
+                />
+              ))}
+            </div>
 
-        {/* Other Form Fields */}
-        <div className="grid grid-cols-2 gap-4">
-          {inputFields.map((field) => (
-            <Input
-              key={field.name}
-              label={field.label}
-              type={field.type as any}
-              name={field.name}
-              value={formData[field.name as keyof TenantFormData]}
-              onChange={handleInputChange}
-              required={field.required}
-              placeholder={`Enter ${field.label.toLowerCase()}`}
-              className="w-full"
-            />
-          ))}
-        </div>
-
-        <div className="flex justify-end mt-4">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-          >
-            Update Tenant Details
-          </button>
-        </div>
-      </form>
-    </>
-  );
+            <div className="flex justify-end mt-4">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              >
+                Update Tenant Details
+              </button>
+            </div>
+          </form>
+        </PermissionGuard>
+      </>
+    );
 });
 
 // Add display name to the component
-EditStore.displayName = 'EditStore';
+EditStore.displayName = "EditStore";
 
 export default EditStore;

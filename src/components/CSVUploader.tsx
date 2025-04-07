@@ -119,7 +119,7 @@ interface UserDto {
 }
 
 interface UserCsvUploaderProps {
-  refetch: (params?: any) => Promise<any>;
+  refetch: (params?: any) => void;
 }
 
 const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
@@ -164,9 +164,9 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
       const response = await axiosInstance.post("/user/import", {
         users: parsedUsers,
       });
-  
+
       console.log("Bulk upload success:", response.data);
-  
+
       // Display a summary toast with success/skipped counts
       if (response?.data?.data?.successful > 0) {
         await refetch();
@@ -176,17 +176,22 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
           `Successfully added ${response.data.data.successful} of ${response.data.total} users`
         );
       }
-  
+
       // Display error messages for skipped records
       if (response.data.data.skipped > 0) {
         setIsLoading(false);
         setParsedUsers([]);
-  
+
         // Group users by reason to avoid too many toasts
         const errorGroups: { [key: string]: string[] } = {};
-  
+
         response.data.data.errors.forEach(
-          (error: { email: string; phone: string; error: string; reason: string }) => {
+          (error: {
+            email: string;
+            phone: string;
+            error: string;
+            reason: string;
+          }) => {
             const errorKey = error.reason || error.error;
             if (!errorGroups[errorKey]) {
               errorGroups[errorKey] = [];
@@ -194,21 +199,21 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
             errorGroups[errorKey].push(error.email);
           }
         );
-  
+
         // Display grouped error messages
         Object.entries(errorGroups).forEach(([errorMsg, emails]) => {
           const userList =
             emails.length > 3
               ? `${emails.slice(0, 3).join(", ")} and ${emails.length - 3} more`
               : emails.join(", ");
-  
+
           toast.error(`${errorMsg}: ${userList}`);
         });
       }
     } catch (err: any) {
       //   console.error("Bulk upload failed:", err);
       setIsLoading(false);
-  
+
       toast.error("Upload failed: " + (err.message || "Unknown error"));
     }
   };

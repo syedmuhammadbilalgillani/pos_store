@@ -9,7 +9,6 @@ import { FormField, UserRole } from "@/constant/types";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useFetchData } from "@/hooks/useFetchData";
 import { fetchRoles } from "@/api/apiFuntions";
 import { usePermission } from "@/hooks/usePermission";
 import { PERMISSIONS } from "@/constant/permissions";
@@ -21,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useUserStore } from "@/stores/userStore";
+import { MultiSelect } from "@/components/ui/MultiSelect";
 
 interface UserFormProps {
   initialData?: Partial<typeof defaultFormData> | any;
@@ -45,18 +46,37 @@ const UserForm: React.FC<UserFormProps> = ({
   const router = useRouter();
   const [formData, setFormData] = useState(defaultFormData);
   const [isLoading, setIsLoading] = useState(false);
-  const [newSetting, setNewSetting] = useState({
-    key: "",
-    value: "",
-    target: "",
-  });
+  const [isRolesLoading, setIsRolesLoading] = useState(false);
+  const [roles, setRoles] = useState<UserRole[]>([]);
+
+  const setPermissions = useUserStore((state) => state.setPermissions);
+
   const { hasPermission } = usePermission();
 
   const shouldFetchUsers = hasPermission(PERMISSIONS.CREATE_USER);
 
-  const { data: roles, loading } = useFetchData(fetchRoles, {
-    enabled: shouldFetchUsers,
-  });
+  // For storing the list of selected permission values (strings)
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+
+  // Fetch roles
+  useEffect(() => {
+    const fetchRolesData = async () => {
+      setIsRolesLoading(true);
+      try {
+        const response = await fetchRoles();
+        console.log(response, "role res");
+        setRoles(response); // Assuming response.data is an array of roles
+      } catch (error) {
+        toast.error("Failed to fetch roles.");
+      } finally {
+        setIsRolesLoading(false);
+      }
+    };
+
+    if (shouldFetchUsers) {
+      fetchRolesData();
+    }
+  }, [shouldFetchUsers]);
 
   // Convert PERMISSIONS object to array of options for the select component
   const permissionOptions = Object.entries(PERMISSIONS).map(([key, value]) => ({
@@ -74,13 +94,19 @@ const UserForm: React.FC<UserFormProps> = ({
       if (mode === "edit" && initialData.permissions) {
         // Handle both array and object formats for permissions
         let formattedPermissions = [];
+        let permissionValues: string[] = [];
 
         if (Array.isArray(initialData.permissions)) {
           formattedPermissions = initialData.permissions.map(
-            (permission: any, index: any) => ({
-              key: permission._id || permission.id || index.toString(),
-              value: permission.name || permission.value || permission,
-            })
+            (permission: any, index: any) => {
+              const permValue =
+                permission.name || permission.value || permission;
+              permissionValues.push(permValue);
+              return {
+                key: permission._id || permission.id || index.toString(),
+                value: permValue,
+              };
+            }
           );
         }
 
@@ -88,11 +114,13 @@ const UserForm: React.FC<UserFormProps> = ({
           ...prev,
           permissions: formattedPermissions,
         }));
+
+        setSelectedPermissions(permissionValues);
       }
     }
   }, [initialData, mode]);
 
-  const formFields: any[] = [
+  const userFormFields: any[] = [
     {
       id: "firstName",
       label: "user.form.firstName",
@@ -144,32 +172,6 @@ const UserForm: React.FC<UserFormProps> = ({
       : []),
   ];
 
-  const handleAddSetting = () => {
-    if (!newSetting.value || !newSetting.target) return;
-
-    setFormData((prev: any) => {
-      const current = prev[newSetting.target] ?? [];
-      if (!Array.isArray(current)) return prev;
-
-      // Auto-generate key as the index
-      const newKey = current.length.toString();
-
-      return {
-        ...prev,
-        [newSetting.target]: [
-          ...current,
-          { key: newKey, value: newSetting.value }, // Add key as index and value
-        ],
-      };
-    });
-
-    setNewSetting({
-      key: "", // Empty key as it's auto-generated
-      value: "",
-      target: newSetting.target,
-    });
-  };
-
   const handleRemoveSetting = (prefix: string, key: string) => {
     setFormData((prev: any) => {
       const current = prev[prefix] ?? [];
@@ -182,25 +184,20 @@ const UserForm: React.FC<UserFormProps> = ({
     });
   };
 
-  const handleAddPermission = (permission: string) => {
-    if (!permission) return;
+  // New handler for the MultiSelect
+  const handlePermissionsChange = (values: string[]) => {
+    setSelectedPermissions(values);
 
-    setFormData((prev: any) => {
-      const currentPermissions = prev.permissions || [];
+    // Convert to the same format as the original permissions array
+    const formattedPermissions = values?.map((value, index) => ({
+      key: index.toString(),
+      value,
+    })) as any;
 
-      // Check if permission already exists
-      if (currentPermissions.some((p: any) => p.value === permission)) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        permissions: [
-          ...currentPermissions,
-          { key: currentPermissions.length.toString(), value: permission },
-        ],
-      };
-    });
+    setFormData((prev) => ({
+      ...prev,
+      permissions: formattedPermissions,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -238,6 +235,9 @@ const UserForm: React.FC<UserFormProps> = ({
           : await axiosInstance.post("/user/add", payload);
 
       if (response.data.success) {
+        if (mode === "edit") {
+          setPermissions(response?.data?.data?.permissions);
+        }
         toast.success(response.data.message);
         router.push("/admin/users");
       } else {
@@ -260,83 +260,27 @@ const UserForm: React.FC<UserFormProps> = ({
     }
   };
 
-  const renderSettings = (settings: any, prefix: string) => {
-    const settingsArray = Array.isArray(settings) ? settings : [];
-
-    return (
-      <div className="space-y-3">
-        {settingsArray.map(({ key, value }: { key: string; value: string }) => (
-          <div key={`${prefix}_${key}`} className="flex items-center space-x-2">
-            <Input
-              id={`${prefix}_${key}`}
-              type="text"
-              value={value}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  [prefix]: prev
-                    ? [prefix].map((item: any) =>
-                        item.key === key
-                          ? { ...item, value: e.target.value }
-                          : item
-                      )
-                    : "",
-                }))
-              }
-              className="flex-grow"
-            />
-            <button
-              type="button"
-              onClick={() => handleRemoveSetting(prefix, key)}
-              className="p-2 text-red-500 hover:text-red-700"
-            >
-              <i
-                aria-label="Delete user"
-                className="cursor-pointer fa-duotone fa-trash-can text-red-500 hover:text-red-700 transition-colors duration-200 text-lg mb-3"
-              />
-            </button>
-          </div>
-        ))}
-        <div className="mt-4 p-3 border border-dashed border-gray-300 rounded-md">
-          <h4 className="text-sm font-medium mb-2">
-            <TranslatedText textKey="user.form.addSetting" />
-          </h4>
-          <div className="flex items-end space-x-2">
-            <Input
-              label="value"
-              type="text"
-              value={newSetting.target === prefix ? newSetting.value : ""}
-              onChange={(e) =>
-                setNewSetting({
-                  ...newSetting,
-                  value: e.target.value,
-                  target: prefix,
-                })
-              }
-              className="flex-grow"
-            />
-            <button
-              type="button"
-              onClick={handleAddSetting}
-              disabled={!newSetting.value || newSetting.target !== prefix}
-              className="mb-4 px-4 py-2 bg-green-500 text-white dark:text-black rounded hover:bg-green-600 disabled:bg-gray-300"
-            >
-              <TranslatedText textKey="add" />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const renderPermissions = () => {
     const permissions = Array.isArray(formData.permissions)
       ? formData.permissions
       : [];
 
+      // Filter out permissions already available in user permissions in edit mode
+    // const availablePermissions = permissionOptions.filter(
+    //   (option) =>
+    //     !permissions.some((p: any) => p.value === option.value)
+    // );
+
     return (
       <div className="space-y-4">
-        <div className="grid gap-4">
+        <MultiSelect
+          options={permissionOptions}
+          onValueChange={handlePermissionsChange}
+          defaultValue={selectedPermissions}
+          placeholder="Select permissions"
+          className="w-fit"
+        />
+        <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1 gap-4">
           {permissions.map(({ key, value }: { key: string; value: string }) => (
             <div
               key={`permissions_${key}`}
@@ -360,37 +304,15 @@ const UserForm: React.FC<UserFormProps> = ({
             </div>
           ))}
         </div>
-
-        <div className="mt-4 p-3 border border-dashed border-gray-300 rounded-md">
-          <h4 className="text-sm font-medium mb-2">
-            <TranslatedText textKey="user.form.addPermission" />
-          </h4>
-          <div className="flex items-end space-x-2">
-            <div className="flex-grow">
-              <Select onValueChange={handleAddPermission}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select permission" />
-                </SelectTrigger>
-                <SelectContent>
-                  {permissionOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
       </div>
     );
   };
 
-  console.log(roles, "roles");
   return (
     <>
-      <Spinner isLoading={isLoading} />
-      <div className="flex justify-end gap-2 mb-4 ">
+      <Spinner isLoading={isLoading || isRolesLoading} />
+
+      <div className="flex justify-end gap-2 mb-4">
         <Button type="submit" disabled={isLoading} onClick={handleSubmit}>
           submit
         </Button>
@@ -405,7 +327,7 @@ const UserForm: React.FC<UserFormProps> = ({
             <TranslatedText textKey="tenant.userInfo" />
           </h2>
           <div className="border-b pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {formFields.map((field: any) => (
+            {userFormFields.map((field: any) => (
               <FormInput
                 key={field.id}
                 field={field}
@@ -417,12 +339,14 @@ const UserForm: React.FC<UserFormProps> = ({
             ))}
 
             {/* Permissions section with select dropdown */}
-            <div className="col-span-full">
-              <h3 className="text-lg font-semibold mt-4">
-                <TranslatedText textKey="user.form.permissions" />
-              </h3>
-              {renderPermissions()}
-            </div>
+            {mode === "edit" && (
+              <div className="col-span-full">
+                <h3 className="text-lg font-semibold mt-4">
+                  <TranslatedText textKey="user.form.permissions" />
+                </h3>
+                {renderPermissions()}
+              </div>
+            )}
           </div>
         </section>
       </form>
