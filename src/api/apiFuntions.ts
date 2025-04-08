@@ -143,3 +143,14 @@ export const deleteUser = async (userId: string) => {
     console.log(error);
   }
 };
+export const fetchCategories = async (params: any) => {
+  const query = new URLSearchParams(params).toString();
+  return await axiosInstance.get(`category?${query}`);
+};
+
+export const deleteCategory = async (id: string) => {
+  return await axiosInstance.delete(`category/${id}`);
+};
+export const fetchSubCategories = async (id: string) => {
+  return await axiosInstance.get(`category/${id}/subcategories`);
+};

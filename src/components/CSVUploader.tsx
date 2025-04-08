@@ -169,7 +169,7 @@ const UserCsvUploader: React.FC<UserCsvUploaderProps> = ({ refetch }) => {
 
       // Display a summary toast with success/skipped counts
       if (response?.data?.data?.successful > 0) {
-        await refetch();
+        refetch();
         setIsLoading(false);
         setParsedUsers([]);
         toast.success(

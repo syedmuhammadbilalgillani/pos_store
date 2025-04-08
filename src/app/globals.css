@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap");
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -47,6 +47,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --content-bg: rgb(229, 229, 229);
 }
 
 .dark {
@@ -81,6 +82,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --content-bg: var(--sidebar);
+
 }
 
 @theme inline {
@@ -172,4 +175,6 @@
   border: 1px solid var(--input);
   border-radius: var(--radius-xl);
   padding: 1.1rem;
+  background: var(--sidebar);
+  overflow: auto;
 }

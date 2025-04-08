@@ -311,7 +311,7 @@ const UserForm: React.FC<UserFormProps> = ({
       </div>
       <form
         onSubmit={handleSubmit}
-        className="p-4 space-y-6 bg-white dark:bg-[#171717] rounded-md text-gray-900 dark:text-gray-100 h-[88vh] overflow-auto"
+        className="p-4 space-y-6  parent"
       >
         <section aria-labelledby="user-heading">
           <h2 id="user-heading" className="text-xl font-bold mb-4">

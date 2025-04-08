@@ -84,7 +84,7 @@ const UserExport = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button aria-label="Export Users Button">Export Users</Button>
+        <Button aria-label="Export Users Button">export</Button>
       </DialogTrigger>
       <DialogContent className="min-w-[400px] px-6 py-4 space-y-4">
         <DialogHeader>

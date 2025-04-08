@@ -1,20 +1,37 @@
-// constants/permissions.ts
-export const PERMISSIONS = {
-    // User management
-    CREATE_USER: 'create_user',
-    GET_ALL_USERS: 'get_all_users',
-    GET_USER_BY_ID: 'get_user_by_id',
-    UPDATE_USER: 'update_user',
-    DELETE_USER: 'delete_user',
-    IMPORT_USERS: 'import_users',
-    EXPORT_USERS: 'export_users',
-    // Store Management
-    UPDATE_STORE:'update_store',
-    // Product management
-    MANAGE_PRODUCTS: 'manage_products',
-    
-    // Reports
-    VIEW_REPORTS: 'view_reports',
-    
-    // Add more permissions as needed
-  };
+
+  export enum PERMISSIONS {
+    // user module
+    CREATE_USER = 'CREATE_USER',
+    GET_ALL_USERS = 'GET_ALL_USERS',
+    GET_USER_BY_ID = 'GET_USER_BY_ID',
+    UPDATE_USER = 'UPDATE_USER',
+    DELETE_USER = 'DELETE_USER',
+    IMPORT_USERS = 'IMPORT_USERS',
+    EXPORT_USERS = 'EXPORT_USERS',
+    // end
+  
+    // category
+    CREATE_CATEGORY = 'CREATE_CATEGORY',
+    GET_ALL_CATEGORIES = 'GET_ALL_CATEGORIES',
+    DELETE_CATEGORY = 'DELETE_CATEGORY',
+    GET_CATEGORY_BY_ID = 'CATEGORY_BY_ID',
+    UPDATE_CATEGORY = 'UPDATE_CATEGORY',
+    GET_SUBCATEGORIES = 'GET_SUBCATEGORIES',
+  
+    // end
+  
+    // store
+    UPDATE_STORE = 'UPDATE_STORE',
+    MANAGE_PRODUCTS = 'MANAGE_PRODUCTS',
+    VIEW_ORDERS = 'VIEW_ORDERS',
+    MANAGE_ORDERS = 'MANAGE_ORDERS',
+    VIEW_REPORTS = 'VIEW_REPORTS',
+    MANAGE_USERS = 'MANAGE_USERS',
+  
+    // navigation
+    DASHBOARD = 'DASHBOARD',
+    USERSMANAGEMENT = 'USER_MANAGEMENT',
+    PRODUCTSMANAGEMENT = 'PRODUCT_MANAGEMENT',
+    STOREMANAGEMENT = 'STORE_MANAGEMENT',
+    CATEGORYMANAGEMENT = 'CATEGORY_MANAGEMENT',
+  }

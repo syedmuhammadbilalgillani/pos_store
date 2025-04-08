@@ -1,6 +1,8 @@
 {
   "add": "Add",
   "back": "Back",
+  "import": "Import",
+  "export": "Export",
   "remove": "Remove",
   "key": "Key",
   "value": "Value",

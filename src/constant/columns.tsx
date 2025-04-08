@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export const usersTableColumn = [
   {
     key: "fullName",
@@ -45,4 +47,25 @@ export const usersTableColumn = [
   //         ))
   //       : "N/A",
   // },
+];
+export const categoriesTableColumn = [
+  { key: "name", label: "Name" },
+  { key: "description", label: "Description" },
+  {
+    key: "image_url",
+    label: "Image",
+    render: (row: any) => (
+      <>
+        <img
+          src={row.image_url}
+          height={80}
+          width={80}
+          loading="lazy"
+          className="rounded-full"
+          alt={row.name ?? "alt text"}
+        />
+      </>
+    ),
+  },
+  { key: "createdAt", label: "Created At" },
 ];

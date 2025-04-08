@@ -3,8 +3,8 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen fixed top-0 left-0 right-0 z-[51]"
-      style={{ backgroundColor: "#FFFFFF" }} // Using backgroundColor from your config
+      className="flex bg-accent flex-col items-center justify-center h-screen fixed top-0 left-0 right-0 z-[51]"
+      // Using backgroundColor from your config
     >
       {/* Title */}
       <h1 className="text-9xl font-bold text-btnColor mb-4">404</h1>
@@ -23,7 +23,7 @@ export default function NotFound() {
       {/* Back to Home Button */}
       <Link
         href="/dashboard"
-        className="px-6 py-3 bg-btnColor text-white font-semibold rounded-lg hover:bg-btnHoverColor transition-colors duration-300"
+        className="px-6 py-3 bg-primary hover:bg-primary/70 text-white font-semibold rounded-lg hover:bg-btnHoverColor transition-colors duration-300"
       >
         Go Back Home
       </Link>

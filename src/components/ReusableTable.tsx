@@ -116,7 +116,7 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
       () => (
         <TableHeader className="bg-sidebar ">
           <TableRow>
-            <TableHead className="rounded-tl-lg">#</TableHead>
+            <TableHead className="rounded-tl-lg  min-w-10 pl-3">#</TableHead>
             {columns.map((column, index) => (
               <TableHead
                 key={index}
@@ -171,7 +171,7 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
 
       return data.map((row, rowIndex) => (
         <TableRow key={rowIndex}>
-          <TableCell>{rowIndex + 1 + (currentPage - 1) * pageSize}</TableCell>
+          <TableCell className="min-w-10 pl-3">{rowIndex + 1 + (currentPage - 1) * pageSize}</TableCell>
           {columns.map((column) => (
             <TableCell key={column.key}>
               {column.render ? column.render(row) : row[column.key]}
@@ -198,6 +198,7 @@ const ReusableTable: React.FC<ReusableTableProps> = React.memo(
               onChange={handleInputChange}
               // className="w-full p-2 border border-gray-100 dark:border-gray-800 focus:outline-none rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
+            
           </div>
           <div className="flex gap-2 flex-wrap">{Button && Button}</div>
         </div>

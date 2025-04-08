@@ -47,7 +47,7 @@ export const SidebarHead = () => {
   // const user = useUserStore((state) => state.user) as User | null;
   const router = useRouter();
   const { hasPermission } = usePermission();
-  const isStoreEdit = hasPermission(PERMISSIONS.UPDATE_STORE  );
+  const isStoreEdit = hasPermission(PERMISSIONS.STOREMANAGEMENT);
   const companyLogo = useMemo(
     () => (
       <Image

@@ -38,7 +38,7 @@ const Users = () => {
     page: 1,
     limit: 10,
     sortBy: "createdAt",
-    sortOrder: "desc" as "asc" | "desc",
+    sortOrder: "asc" as "asc" | "desc",
   });
 
   const debouncedParams = useDebounce(queryParams, 500);
@@ -151,7 +151,7 @@ const Users = () => {
           <div className="flex flex-wrap gap-2 my-4">
             <PermissionGuard permission={PERMISSIONS.CREATE_USER}>
               <Button onClick={() => router.push("/admin/users/create")}>
-                Add User
+               add
               </Button>
             </PermissionGuard>
             <PermissionGuard permission={PERMISSIONS.EXPORT_USERS}>
@@ -160,7 +160,7 @@ const Users = () => {
             <PermissionGuard permission={PERMISSIONS.IMPORT_USERS}>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button>Import Users</Button>
+                  <Button>import</Button>
                 </DialogTrigger>
                 <DialogContent className="min-w-fit">
                   <DialogHeader>

@@ -1,5 +1,5 @@
 import { PERMISSIONS } from "@/constant/permissions";
-import { Home, Users2 } from "lucide-react";
+import { Home, Type, Users2 } from "lucide-react";
 
 export const navigation = [
   {
@@ -10,6 +10,14 @@ export const navigation = [
         url: "/dashboard",
         icon: Home,
         isActive: true,
+        requiredPermissions: [PERMISSIONS.DASHBOARD],
+      },
+      {
+        title: "Category",
+        url: "/category",
+        icon: Type,
+        isActive: false,
+        requiredPermissions: [PERMISSIONS.CATEGORYMANAGEMENT],
       },
     ],
   },
@@ -21,7 +29,7 @@ export const navigation = [
         url: "/admin/users",
         icon: Users2,
         isActive: true,
-        requiredPermissions: [PERMISSIONS.GET_ALL_USERS],
+        requiredPermissions: [PERMISSIONS.USERSMANAGEMENT],
       },
       // {
       //   title: "nav.user",

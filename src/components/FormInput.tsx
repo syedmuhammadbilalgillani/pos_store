@@ -1,16 +1,14 @@
 import React from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  Input,
-} from "@/components/ui/input";
-import {
-  Label
-} from "@/components/ui/label";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import {
-  Switch
-} from "@/components/ui/switch";
+import { Switch } from "@/components/ui/switch";
 import TranslatedText from "./Language/TranslatedText";
 
 type FormFieldOption = {
@@ -21,7 +19,7 @@ type FormFieldOption = {
 type FormField = {
   id: string;
   label: string;
-  type: "text" | "email" | "tel" | "password" | "select" | "checkbox";
+  type: "text" | "email" | "tel" | "password" | "select" | "checkbox" | "file";
   required?: boolean;
   options?: FormFieldOption[]; // for select
 };
@@ -32,7 +30,11 @@ type FormInputProps = {
   onChange: (id: string, value: any) => void;
 };
 
-export const FormInput: React.FC<FormInputProps> = ({ field, value, onChange }) => {
+export const FormInput: React.FC<FormInputProps> = ({
+  field,
+  value,
+  onChange,
+}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = field.type === "checkbox" ? e.target.checked : e.target.value;
     onChange(field.id, val);
@@ -41,11 +43,11 @@ export const FormInput: React.FC<FormInputProps> = ({ field, value, onChange }) 
   return (
     <div className="mb-4">
       <Label htmlFor={field.id} className="block mb-2 capitalize">
-        <TranslatedText textKey={field.label}/>
+        <TranslatedText textKey={field.label} />
         {field.required && <span className="text-red-500 ml-1">*</span>}
       </Label>
 
-      {["text", "email", "tel", "password"].includes(field.type) && (
+      {["text", "email", "tel", "password", "file"].includes(field.type) && (
         <Input
           id={field.id}
           type={field.type}
@@ -59,7 +61,7 @@ export const FormInput: React.FC<FormInputProps> = ({ field, value, onChange }) 
         <Select
           onValueChange={(val) => onChange(field.id, val)}
           value={value?.toString() || ""}
-          >
+        >
           <SelectTrigger id={field.id}>
             <SelectValue placeholder="Select..." />
           </SelectTrigger>
