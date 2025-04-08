@@ -86,22 +86,73 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     try {
       const formDataToSubmit = new FormData() as any;
 
+      // Append form fields to FormData
       Object.keys(formData).forEach((key) => {
         formDataToSubmit.append(key, formData[key]);
       });
 
+      // If an image is selected, append it as well
       if (image) {
         formDataToSubmit.append("image_url", image);
       }
 
+      // Make API call depending on the mode (create or update)
       if (mode === "create") {
-        await axiosInstance.post("/category", formDataToSubmit);
+        if (isSubcategory) {
+          await axiosInstance.post("/category", formDataToSubmit); // Subcategory creation API
+        } else {
+          await axiosInstance.post("/category", formDataToSubmit); // Category creation API
+        }
       } else {
-        await axiosInstance.put(`/category/${categoryId}`, formDataToSubmit);
+        if (isSubcategory) {
+          const fieldsToRemove = [
+            "passwordHash",
+            "_id",
+            "createdAt",
+            "updatedAt",
+            "__v",
+          ];
+
+          const cleanedData = { ...formData };
+          fieldsToRemove.forEach((field) => delete cleanedData[field]);
+
+          const formDataToSubmit = new FormData();
+          Object.entries(cleanedData).forEach(([key, value]) =>
+            formDataToSubmit.append(key, value as any)
+          );
+
+          if (image) {
+            formDataToSubmit.append("image_url", image);
+          }
+          await axiosInstance.put(`/category/${categoryId}`, formDataToSubmit); // Subcategory update API
+        } else {
+          const fieldsToRemove = [
+            "_id",
+            "createdAt",
+            "updatedAt",
+            "parent_category_id",
+            "__v",
+          ];
+
+          const cleanedData = { ...formData };
+          fieldsToRemove.forEach((field) => delete cleanedData[field]);
+
+          const formDataToSubmit = new FormData();
+          Object.entries(cleanedData).forEach(([key, value]) =>
+            formDataToSubmit.append(key, value as any)
+          );
+
+          if (image) {
+            formDataToSubmit.append("image_url", image);
+          }
+          await axiosInstance.put(`/category/${categoryId}`, formDataToSubmit); // Category update API
+        }
       }
 
+      // Show success toast
       toast.success(`${mode === "create" ? "Created" : "Updated"} category successfully!`);
-      router.push('/category');
+
+      // Call onSubmit callback if provided
       if (onSubmit) onSubmit(formData);
     } catch (error) {
       console.error("Error submitting form:", error);
