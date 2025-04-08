@@ -34,7 +34,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<any>({});
   const [categories, setCategories] = useState<any[]>([]);
-  const [subcategories, setSubcategories] = useState<any[]>([]);  // To store fetched subcategories
+  const [subcategories, setSubcategories] = useState<any[]>([]); // To store fetched subcategories
   const [image, setImage] = useState<File | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const router = useRouter();
@@ -55,8 +55,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
           setFormData(data?.data ?? {});
 
           // Fetch subcategories when in update mode and categoryId exists
-          const subcategoryData = await fetchSubCategories(categoryId);  // Fetch subcategories
-          setSubcategories(subcategoryData?.data?.data ?? []);  // Set subcategories
+          const subcategoryData = await fetchSubCategories(categoryId); // Fetch subcategories
+          setSubcategories(subcategoryData?.data?.data ?? []); // Set subcategories
         }
       } catch (error) {
         console.error("Error loading data:", error);
@@ -150,8 +150,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
       }
 
       // Show success toast
-      toast.success(`${mode === "create" ? "Created" : "Updated"} category successfully!`);
-
+      toast.success(
+        `${mode === "create" ? "Created" : "Updated"} ${
+          isSubcategory ? "sub category" : "category"
+        } successfully!`
+      );
+      router.push("/category");
       // Call onSubmit callback if provided
       if (onSubmit) onSubmit(formData);
     } catch (error) {
@@ -161,8 +165,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
       setLoading(false);
     }
   };
-
- 
 
   const categoryFormFields = [
     {
@@ -193,35 +195,41 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 parent">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 parent"
+      >
         {loading && (
           <div className="col-span-full mb-4">
             <Spinner isLoading={true} />
           </div>
         )}
 
-        {!loading && categoryFormFields.map((field, index) => (
-          <div key={index} className="mb-4">
-            {field.type === "file" ? (
-              <>
-                <Label htmlFor="file" className="mb-2">Image</Label>
-                <Input
-                  id={field.id}
-                  type="file"
-                  onChange={handleFileChange}
-                  required={field.required}
+        {!loading &&
+          categoryFormFields.map((field, index) => (
+            <div key={index} className="mb-4">
+              {field.type === "file" ? (
+                <>
+                  <Label htmlFor="file" className="mb-2">
+                    Image
+                  </Label>
+                  <Input
+                    id={field.id}
+                    type="file"
+                    onChange={handleFileChange}
+                    required={field.required}
+                  />
+                </>
+              ) : (
+                <FormInput
+                  key={field.id}
+                  field={field as any}
+                  value={formData[field.id]}
+                  onChange={handleChange}
                 />
-              </>
-            ) : (
-              <FormInput
-                key={field.id}
-                field={field as any}
-                value={formData[field.id]}
-                onChange={handleChange}
-              />
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))}
 
         {!loading && isSubcategory && (
           <div className="col-span-full mb-4">
@@ -229,7 +237,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
               category.form.parentCategory
             </label>
             <Select
-              onValueChange={(value) => handleChange("parent_category_id", value)}
+              onValueChange={(value) =>
+                handleChange("parent_category_id", value)
+              }
               value={formData.parent_category_id || ""}
             >
               <SelectTrigger className="w-full">
@@ -270,12 +280,15 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             <div className="flex flex-col gap-2">
               <Label htmlFor="sub-categories">Sub Categories</Label>
               <div className="flex gap-5 ">
-
-              {subcategories.map((sub) => (
-                <Link className="inline-flex items-center px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full" key={sub._id} href={`/subcategory/${sub._id}`} >
-                  {sub.name}
-                </Link>
-              ))}
+                {subcategories.map((sub) => (
+                  <Link
+                    className="inline-flex items-center px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full"
+                    key={sub._id}
+                    href={`/subcategory/${sub._id}`}
+                  >
+                    {sub.name}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
